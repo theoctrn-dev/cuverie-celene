@@ -1,0 +1,3042 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<meta name="mobile-web-app-capable" content="yes">
+<meta name="apple-mobile-web-app-capable" content="yes">
+<meta name="theme-color" content="#7a1a2e">
+<title>CuverieApp</title>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500&display=swap" rel="stylesheet">
+<script>
+  const SUPABASE_URL = 'https://qkvnbtxzrmsbvlludosw.supabase.co';
+  const SUPABASE_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InFrdm5idHh6cm1zYnZsbHVkb3N3Iiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzUxMTg1OTIsImV4cCI6MjA5MDY5NDU5Mn0.fPvBPM7hqsYTvcuSdOuSe3wcA0PR5sKM5W0XzBHV4r0';
+</script>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.39.3/dist/umd/supabase.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:#f5f0eb; --bg2:#ede6de; --bg3:#e8dfd4; --bg4:#ddd2c5;
+  --surf:#ffffff; --surf2:#f5f0eb;
+  --bord:rgba(100,30,30,0.12); --bord2:rgba(100,30,30,0.22);
+  --wine:#7a1a2e; --wine2:#9a2a40; --wine-dim:rgba(122,26,46,0.10);
+  --txt:#1a0a0a; --txt2:#4a2020; --txt3:#8a5050; --txt4:#c09090;
+  --ok:#2a7a20; --ok-l:rgba(42,122,32,0.12);
+  --warn:#9a5a00; --warn-l:rgba(154,90,0,0.12);
+  --danger:#c02010; --danger-l:rgba(192,32,16,0.12);
+  --blue:#1a5a9a; --blue-l:rgba(26,90,154,0.12);
+  --teal:#1a7a50; --teal-l:rgba(26,122,80,0.12);
+  --amber:#8a6010; --amber-l:rgba(138,96,16,0.12);
+  --rose:#9a2050; --rose-l:rgba(154,32,80,0.12);
+  --gray:#5a4a4a; --gray-l:rgba(90,74,74,0.10);
+  --r:14px; --rsm:9px;
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html,body{height:100%;overflow:hidden;background:var(--bg);font-family:'DM Sans',sans-serif;color:var(--txt)}
+
+/* ── LOGIN ── */
+#login-screen{position:fixed;inset:0;background:var(--wine);display:flex;flex-direction:column;align-items:center;justify-content:center;padding:32px 24px;z-index:500}
+.login-logo{font-family:'DM Serif Display',serif;font-size:48px;color:#fff;margin-bottom:4px}
+.login-app{font-family:'DM Serif Display',serif;font-size:26px;color:#fff;margin-bottom:4px}
+.login-sub{font-size:13px;color:rgba(255,255,255,0.6);margin-bottom:36px}
+.login-box{width:100%;max-width:340px;background:#fff;border-radius:var(--r);padding:24px;box-shadow:0 8px 32px rgba(0,0,0,0.2)}
+.lfield{margin-bottom:14px}
+.lfield label{font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin-bottom:5px;display:block}
+.lfield input{width:100%;padding:11px 13px;border:1px solid #ddd2c5;border-radius:var(--rsm);font-size:15px;color:var(--txt);background:#f5f0eb;font-family:'DM Sans',sans-serif;-webkit-appearance:none}
+.lfield input:focus{outline:none;border-color:var(--wine)}
+.lbtn{width:100%;padding:14px;background:var(--wine);color:#fff;border:none;border-radius:var(--rsm);font-size:15px;font-weight:500;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:4px}
+.lerr{font-size:13px;color:var(--danger);margin-top:10px;text-align:center;min-height:18px}
+
+/* ── APP LAYOUT ── */
+.app{display:flex;flex-direction:column;height:100vh;height:100dvh}
+.header{background:var(--wine);padding:12px 16px 10px;display:flex;align-items:center;justify-content:space-between;flex-shrink:0}
+.header-logo{font-family:'DM Serif Display',serif;font-size:20px;color:#fff}
+.header-sub{font-size:10px;color:rgba(255,255,255,0.6);margin-top:1px}
+.user-pill{display:flex;align-items:center;gap:7px;background:rgba(255,255,255,0.18);border:0.5px solid rgba(255,255,255,0.3);border-radius:99px;padding:4px 10px 4px 5px}
+.user-av{width:24px;height:24px;border-radius:50%;background:rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:600;color:#fff}
+.user-name{font-size:12px;color:rgba(255,255,255,0.9)}
+.user-role{font-size:10px;padding:1px 6px;border-radius:99px;background:rgba(255,255,255,0.22);color:#fff}
+.logout-btn{width:34px;height:34px;border-radius:50%;background:rgba(255,255,255,0.18);border:0.5px solid rgba(255,255,255,0.3);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:14px;color:#fff}
+
+/* XP BAR */
+.xp-wrap{background:var(--wine);padding:2px 16px 8px;display:flex;align-items:center;gap:8px;flex-shrink:0}
+.xp-lv{font-size:10px;font-weight:600;color:rgba(255,255,255,0.8);white-space:nowrap}
+.xp-track{flex:1;height:5px;background:rgba(255,255,255,0.25);border-radius:99px;overflow:hidden}
+.xp-fill{height:100%;background:#fff;border-radius:99px;transition:width 1s cubic-bezier(.34,1.56,.64,1)}
+.xp-pts{font-size:10px;color:rgba(255,255,255,0.6)}
+
+/* ── SCROLL ── */
+.scroll{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding-bottom:80px}
+.scroll::-webkit-scrollbar{display:none}
+
+/* ── BOTTOM NAV ── */
+.bnav{position:fixed;bottom:0;left:0;right:0;background:#fff;border-top:1px solid #ddd2c5;display:flex;padding-bottom:env(safe-area-inset-bottom,0);z-index:100;box-shadow:0 -2px 12px rgba(122,26,46,0.08)}
+.nb{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0 8px;cursor:pointer;color:#c09090;position:relative}
+.nb.active{color:var(--wine)}
+.nb.active::before{content:'';position:absolute;top:0;left:15%;right:15%;height:2px;background:var(--wine);border-radius:0 0 3px 3px}
+.nb-icon{font-size:22px}
+.nb-lbl{font-size:10px;font-weight:500}
+.nav-badge{position:absolute;top:-3px;right:-5px;min-width:16px;height:16px;border-radius:99px;background:var(--danger);color:#fff;font-size:9px;font-weight:700;display:flex;align-items:center;justify-content:center;padding:0 3px}
+
+/* ── PAGES ── */
+.page{display:none}.page.active{display:block}
+
+/* ── SECTIONS ── */
+.section{padding:14px 16px 0}
+.slabel{font-size:11px;font-weight:600;color:var(--wine);text-transform:uppercase;letter-spacing:.08em;margin-bottom:10px}
+
+/* ── CARDS ── */
+.card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:14px 16px;margin-bottom:10px}
+.card-flat{background:var(--bg3);border:1px solid var(--bord);border-radius:var(--r);padding:14px 16px;margin-bottom:10px}
+
+/* ── STATS ── */
+.stats-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:14px 16px 0}
+.stat{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:14px 16px}
+.stat-lbl{font-size:11px;color:var(--txt3);margin-bottom:4px}
+.stat-val{font-size:28px;font-weight:300;color:var(--wine);font-family:'DM Serif Display',serif;line-height:1}
+.stat-sub{font-size:11px;color:var(--txt3);margin-top:3px}
+
+/* ── BADGES ── */
+.badge{display:inline-flex;align-items:center;padding:3px 8px;border-radius:99px;font-size:11px;font-weight:500;white-space:nowrap}
+.b-rouge{background:rgba(192,57,43,0.12);color:#c0392b}
+.b-blanc{background:var(--amber-l);color:var(--amber)}
+.b-rose{background:var(--rose-l);color:var(--rose)}
+.b-vide{background:var(--gray-l);color:var(--gray)}
+.b-ok{background:var(--ok-l);color:var(--ok)}
+.b-warn{background:var(--warn-l);color:var(--warn)}
+.b-enc{background:var(--blue-l);color:var(--blue)}
+.b-net{background:var(--gray-l);color:var(--gray)}
+
+/* ── PLANNING ITEMS ── */
+.plan-day{margin-bottom:20px}
+.plan-day-hdr{display:flex;align-items:center;gap:8px;padding:0 16px;margin-bottom:8px}
+.plan-day-lbl{font-size:12px;font-weight:700;color:var(--wine);text-transform:uppercase;letter-spacing:.07em}
+.plan-day-date{font-size:11px;color:var(--txt3)}
+.plan-day-lbl.today{color:var(--danger)}
+
+.plan-item{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);margin:0 16px 8px;overflow:hidden;display:flex}
+.plan-item.done{opacity:.65}
+.plan-stripe{width:4px;flex-shrink:0}
+.stripe-urgent{background:var(--danger)}
+.stripe-normal{background:var(--warn)}
+.stripe-bas{background:var(--ok)}
+.plan-body{flex:1;padding:12px 14px;min-width:0}
+.plan-top{display:flex;align-items:flex-start;gap:8px;margin-bottom:6px}
+.plan-prio{font-size:14px;flex-shrink:0;margin-top:1px}
+.plan-title{font-size:14px;font-weight:500;color:var(--txt);flex:1}
+.plan-title.done-txt{text-decoration:line-through;color:var(--txt3);font-weight:400}
+.plan-type-tag{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;white-space:nowrap;flex-shrink:0}
+.tag-tache{background:var(--blue-l);color:var(--blue)}
+.tag-ot{background:var(--wine-dim);color:var(--wine)}
+.plan-meta{display:flex;gap:8px;flex-wrap:wrap;font-size:12px;color:var(--txt3)}
+.plan-assign{color:var(--txt2);font-weight:500}
+.plan-cuve{color:var(--wine);font-size:11px}
+.plan-done-badge{display:inline-flex;align-items:center;gap:4px;font-size:11px;color:var(--ok);background:var(--ok-l);padding:2px 8px;border-radius:99px;margin-top:6px}
+.plan-check-btn{display:flex;align-items:center;justify-content:center;padding:10px 14px;border-left:1px solid var(--bord);cursor:pointer;flex-shrink:0;background:transparent;color:var(--txt4);font-size:20px;transition:all .15s}
+.plan-check-btn:active{background:var(--bg3)}
+.plan-check-btn.done-check{color:var(--ok);background:var(--ok-l)}
+
+/* ── CUVES ── */
+.cuve-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:13px 16px;margin-bottom:10px}
+.cuve-id{font-size:17px;font-weight:500;color:var(--wine);font-family:'DM Serif Display',serif}
+.cuve-meta{font-size:12px;color:var(--txt3);margin-top:2px;margin-bottom:10px}
+.fill-track{height:6px;background:var(--bg4);border-radius:99px;overflow:hidden}
+.fill-bar{height:100%;border-radius:99px}
+.fill-meta{display:flex;justify-content:space-between;margin-top:4px;font-size:11px;color:var(--txt3)}
+.cuve-lot{font-size:12px;color:var(--txt2);margin-top:6px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.cuve-btn{display:flex;align-items:center;justify-content:center;gap:5px;margin-top:8px;padding:7px;border:1px solid var(--bord2);border-radius:var(--rsm);font-size:12px;cursor:pointer;width:100%;font-family:'DM Sans',sans-serif;background:var(--bg)}
+.cuve-btn:active{background:var(--bg3)}
+.cuve-btn.del{background:var(--danger-l);border-color:rgba(192,32,16,0.2);color:var(--danger)}
+
+/* ── ANALYSES ── */
+.an-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:14px 16px;margin-bottom:10px}
+.an-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.an-cuve{font-size:17px;color:var(--wine);font-family:'DM Serif Display',serif}
+.an-date{font-size:12px;color:var(--txt3)}
+.an-grid{display:grid;grid-template-columns:1fr 1fr 1fr;gap:7px}
+.an-p{background:var(--bg3);border-radius:var(--rsm);padding:8px 10px}
+.an-pn{font-size:10px;color:var(--txt3);margin-bottom:3px}
+.an-pv{font-size:16px;font-weight:300;color:var(--txt);font-family:'DM Serif Display',serif;line-height:1.1}
+.an-pu{font-size:10px;color:var(--txt3)}
+.an-obs{font-size:12px;color:var(--txt2);font-style:italic;border-top:.5px solid var(--bord);padding-top:7px;margin-top:8px}
+
+/* ── LOTS ── */
+.lot-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:14px 16px;margin-bottom:10px}
+.lot-name{font-size:15px;font-weight:600;color:var(--txt);font-family:'DM Serif Display',serif}
+.lot-ref{font-size:11px;color:var(--txt3);margin-top:2px}
+.lot-cuves{display:flex;flex-wrap:wrap;gap:4px;margin-top:8px}
+.lot-chip{background:var(--bg3);border:.5px solid var(--bord2);border-radius:var(--rsm);padding:2px 9px;font-size:12px;color:var(--txt2)}
+.lot-meta{display:flex;gap:12px;font-size:13px;color:var(--txt3);border-top:.5px solid var(--bord);padding-top:8px;margin-top:8px;flex-wrap:wrap}
+.lot-actions{display:flex;gap:6px;margin-top:8px}
+.lot-btn{flex:1;padding:7px;border-radius:var(--rsm);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--bord2);background:var(--bg);color:var(--txt2);font-family:'DM Sans',sans-serif;text-align:center}
+.lot-btn.primary{background:var(--wine-dim);border-color:rgba(122,26,46,0.25);color:var(--wine)}
+.lot-btn.del{background:var(--danger-l);border-color:rgba(192,32,16,0.2);color:var(--danger)}
+
+/* ── FILTER PILLS ── */
+.fpills{display:flex;gap:6px;overflow-x:auto;padding:12px 16px 8px;scrollbar-width:none}
+.fpills::-webkit-scrollbar{display:none}
+.fpill{flex-shrink:0;padding:6px 13px;border-radius:99px;font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--bord);color:var(--txt3);background:var(--surf)}
+.fpill.active{background:var(--wine-dim);border-color:var(--wine);color:var(--wine);font-weight:600}
+
+/* ── BOTTOM SHEET ── */
+.overlay{display:none;position:fixed;inset:0;background:rgba(0,0,0,0.55);z-index:300}
+.overlay.open{display:block}
+.sheet{position:fixed;bottom:0;left:0;right:0;background:#fff;border-radius:20px 20px 0 0;border-top:.5px solid var(--bord2);z-index:301;padding-bottom:env(safe-area-inset-bottom,16px);max-height:93vh;overflow-y:auto;transform:translateY(100%);transition:transform .3s cubic-bezier(.32,.72,0,1)}
+.sheet.open{transform:translateY(0)}
+.sh-handle{width:36px;height:4px;background:var(--bord2);border-radius:99px;margin:12px auto 0}
+.sh-title{font-size:17px;font-weight:500;font-family:'DM Serif Display',serif;color:var(--txt);padding:12px 20px 14px;border-bottom:.5px solid var(--bord)}
+.sh-body{padding:16px 20px}
+
+/* ── FORMS ── */
+.fl{font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:5px;display:block}
+.frow{margin-bottom:13px}
+.fg2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.fg3{display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px}
+.fsep{font-size:11px;font-weight:600;color:var(--txt3);text-transform:uppercase;letter-spacing:.07em;margin:14px 0 10px;padding-bottom:6px;border-bottom:.5px solid var(--bord)}
+input,select,textarea{width:100%;padding:11px 13px;border:1px solid #ddd2c5;border-radius:var(--rsm);font-size:15px;background:#f5f0eb;color:var(--txt);font-family:'DM Sans',sans-serif;-webkit-appearance:none}
+input::placeholder,textarea::placeholder{color:var(--txt3)}
+input:focus,select:focus,textarea:focus{outline:none;border-color:var(--wine)}
+select option{background:#fff;color:var(--txt)}
+textarea{resize:none;min-height:65px}
+.factions{display:flex;gap:10px;margin-top:16px}
+.fbtn{flex:1;padding:14px;border-radius:var(--rsm);font-size:15px;font-weight:500;cursor:pointer;border:none;font-family:'DM Sans',sans-serif}
+.fbtn-cancel{background:var(--surf2);color:var(--txt2);border:1px solid var(--bord)}
+.fbtn-save{background:var(--wine);color:#fff}
+.fbtn:active{opacity:.82}
+
+/* ── RAPPORT CLOTURE ── */
+.clot-info{background:var(--bg3);border-radius:var(--rsm);padding:12px 14px;margin-bottom:14px}
+.clot-info-title{font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-weight:600}
+.clot-info-row{font-size:13px;color:var(--txt2);margin-bottom:3px}
+.clot-prio{font-size:18px;margin-right:6px}
+
+/* ── FAB ── */
+.fab{position:fixed;bottom:calc(env(safe-area-inset-bottom,0px) + 72px);right:18px;width:52px;height:52px;border-radius:50%;background:var(--wine);color:#fff;font-size:26px;display:flex;align-items:center;justify-content:center;cursor:pointer;z-index:90;box-shadow:0 4px 24px rgba(122,26,46,0.35)}
+.fab:active{transform:scale(.94)}
+
+/* ── EMPTY / LOADING ── */
+.empty{text-align:center;padding:44px 24px;color:var(--txt3)}
+.empty-icon{font-size:36px;margin-bottom:10px;opacity:.4}
+.empty-txt{font-size:14px}
+.loading{text-align:center;padding:40px 24px;font-size:14px;color:var(--txt3)}
+
+/* ── TOAST ── */
+.toast{position:fixed;top:76px;left:50%;transform:translateX(-50%) translateY(-16px);background:var(--surf);border:1px solid var(--bord2);border-radius:var(--rsm);padding:9px 16px;font-size:13px;color:var(--txt);z-index:999;opacity:0;transition:all .22s;pointer-events:none;white-space:nowrap;box-shadow:0 4px 16px rgba(0,0,0,0.1)}
+.toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+
+/* ── XP NOTIF ── */
+.xp-notif{position:fixed;bottom:90px;right:16px;background:var(--wine);color:#fff;border-radius:var(--rsm);padding:10px 16px;font-size:14px;font-weight:600;z-index:998;opacity:0;transform:translateY(20px) scale(.9);transition:all .3s cubic-bezier(.34,1.56,.64,1);pointer-events:none}
+.xp-notif.show{opacity:1;transform:translateY(0) scale(1)}
+
+/* ── CONFETTI ── */
+#confetti-canvas{position:fixed;inset:0;pointer-events:none;z-index:9999;display:none}
+
+/* ── TEAM PROGRESS ── */
+.team-prog{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:14px 16px;margin:14px 16px 0}
+.team-prog-hdr{display:flex;justify-content:space-between;align-items:center;margin-bottom:10px}
+.team-prog-title{font-size:13px;font-weight:600;color:var(--txt)}
+.team-prog-pct{font-size:18px;font-weight:700;color:var(--wine);font-family:'DM Serif Display',serif}
+.team-prog-track{height:10px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-bottom:5px}
+.team-prog-fill{height:100%;border-radius:99px;background:linear-gradient(90deg,var(--wine),#c8403a);transition:width 1s cubic-bezier(.34,1.56,.64,1)}
+.team-prog-sub{font-size:11px;color:var(--txt3)}
+
+
+/* ── MESSAGES ── */
+.msg-badge{position:absolute;top:-4px;right:-4px;width:18px;height:18px;border-radius:50%;background:var(--danger);color:#fff;font-size:10px;font-weight:700;display:flex;align-items:center;justify-content:center;display:none}
+.msg-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:13px 15px;margin-bottom:8px;display:flex;gap:12px;align-items:flex-start}
+.msg-card.urgent{border-left:3px solid var(--danger);background:rgba(192,32,16,0.03)}
+.msg-card.normal{border-left:3px solid var(--warn)}
+.msg-card.info{border-left:3px solid var(--blue)}
+.msg-card.lu{opacity:.6}
+.msg-prio{font-size:18px;flex-shrink:0;margin-top:1px}
+.msg-body{flex:1;min-width:0}
+.msg-from{font-size:12px;font-weight:600;color:var(--txt2);margin-bottom:3px}
+.msg-text{font-size:14px;color:var(--txt);line-height:1.4}
+.msg-time{font-size:11px;color:var(--txt3);margin-top:4px}
+.msg-lu-btn{font-size:11px;color:var(--txt3);background:var(--bg3);border:1px solid var(--bord);border-radius:var(--rsm);padding:3px 9px;cursor:pointer;margin-top:6px;display:inline-block}
+.msg-new-btn{display:flex;align-items:center;justify-content:center;gap:6px;width:100%;padding:13px;background:var(--surf);border:1px solid var(--bord2);border-radius:var(--r);font-size:14px;font-weight:500;color:var(--wine);cursor:pointer;margin-bottom:10px}
+.msg-new-btn:active{background:var(--bg3)}
+.nb-wrap{position:relative;display:flex;flex-direction:column;align-items:center}
+
+
+/* ── HISTORIQUE ── */
+.histo-item{display:flex;gap:10px;padding:9px 0;border-bottom:.5px solid var(--bord);align-items:flex-start}
+.histo-item:last-child{border-bottom:none}
+.histo-av{width:30px;height:30px;border-radius:50%;background:var(--wine-dim);display:flex;align-items:center;justify-content:center;font-size:13px;font-weight:600;color:var(--wine);flex-shrink:0}
+.histo-body{flex:1;min-width:0}
+.histo-action{font-size:13px;color:var(--txt);font-weight:500}
+.histo-meta{font-size:11px;color:var(--txt3);margin-top:2px}
+.histo-comment{font-size:12px;color:var(--txt2);font-style:italic;margin-top:2px}
+
+/* ── INCIDENTS ── */
+.inc-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:13px 15px;margin-bottom:8px}
+.inc-card.urgent{border-left:3px solid var(--danger)}
+.inc-card.normal{border-left:3px solid var(--warn)}
+.inc-card.bas{border-left:3px solid var(--ok)}
+.inc-header{display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:6px}
+.inc-titre{font-size:14px;font-weight:600;color:var(--txt)}
+.inc-statut{font-size:11px;padding:2px 8px;border-radius:99px;font-weight:600;white-space:nowrap}
+.inc-ouvert{background:var(--danger-l);color:var(--danger)}
+.inc-en_cours{background:var(--warn-l);color:var(--warn)}
+.inc-resolu{background:var(--ok-l);color:var(--ok)}
+.inc-desc{font-size:13px;color:var(--txt2);margin-bottom:6px}
+.inc-meta{font-size:11px;color:var(--txt3)}
+.inc-actions{display:flex;gap:6px;margin-top:8px;flex-wrap:wrap}
+.inc-btn{padding:6px 12px;border-radius:var(--rsm);font-size:12px;font-weight:500;cursor:pointer;border:1px solid var(--bord2);background:var(--bg);color:var(--txt2);font-family:'DM Sans',sans-serif}
+.inc-btn.primary{background:var(--wine-dim);border-color:rgba(122,26,46,0.25);color:var(--wine)}
+.inc-btn.success{background:var(--ok-l);border-color:rgba(42,122,32,0.25);color:var(--ok)}
+
+/* ── INVENTAIRE ── */
+.inv-card{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:13px 15px;margin-bottom:8px;display:flex;align-items:center;gap:12px}
+.inv-card.alerte{border-color:rgba(192,32,16,0.3);background:rgba(192,32,16,0.02)}
+.inv-icon{font-size:24px;flex-shrink:0}
+.inv-body{flex:1;min-width:0}
+.inv-nom{font-size:14px;font-weight:500;color:var(--txt)}
+.inv-cat{font-size:11px;color:var(--txt3)}
+.inv-right{text-align:right;flex-shrink:0}
+.inv-qty{font-size:20px;font-weight:700;color:var(--wine);font-family:'DM Serif Display',serif;line-height:1}
+.inv-unite{font-size:11px;color:var(--txt3)}
+.inv-alerte{font-size:11px;color:var(--danger);font-weight:600;margin-top:2px}
+.inv-bar{height:4px;background:var(--bg3);border-radius:99px;overflow:hidden;margin-top:6px}
+.inv-bar-fill{height:100%;border-radius:99px;background:var(--ok);transition:width .4s}
+.inv-bar-fill.warn{background:var(--warn)}
+.inv-bar-fill.danger{background:var(--danger)}
+
+/* ── COURBES ── */
+.chart-wrap{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:14px 16px;margin-bottom:12px}
+.chart-title{font-size:13px;font-weight:600;color:var(--txt);margin-bottom:10px}
+.chart-canvas{width:100%!important;max-height:200px}
+
+/* ── GRAPHE FERMENTATION sur fiche cuve ── */
+.cuve-chart-section{margin:10px 0 0;border-top:.5px solid var(--bord);padding-top:10px}
+
+
+/* ── WORKFLOW TIMELINE ── */
+.lot-timeline { margin: 10px 0 8px; overflow-x: auto; scrollbar-width: none; }
+.lot-timeline::-webkit-scrollbar { display: none; }
+.timeline-track { display: flex; align-items: flex-start; gap: 0; min-width: max-content; padding: 4px 0 8px; }
+.tl-step { display: flex; flex-direction: column; align-items: center; position: relative; }
+.tl-step:not(:last-child)::after {
+  content: ''; position: absolute; top: 14px; left: 50%; width: 100%;
+  height: 2px; background: var(--bord2); z-index: 0;
+}
+.tl-step:not(:last-child).done::after { background: var(--wine); }
+.tl-dot {
+  width: 28px; height: 28px; border-radius: 50%; border: 2px solid var(--bord2);
+  background: var(--surf); display: flex; align-items: center; justify-content: center;
+  font-size: 13px; z-index: 1; position: relative; flex-shrink: 0;
+  transition: all .2s;
+}
+.tl-step.done .tl-dot { background: var(--wine); border-color: var(--wine); }
+.tl-step.active .tl-dot { background: var(--wine-dim); border-color: var(--wine); border-width: 3px; box-shadow: 0 0 0 3px rgba(122,26,46,0.12); }
+.tl-step.future .tl-dot { background: var(--bg3); border-color: var(--bord); }
+.tl-label { font-size: 9px; color: var(--txt3); margin-top: 5px; text-align: center; max-width: 52px; line-height: 1.2; }
+.tl-step.done .tl-label { color: var(--wine); font-weight: 600; }
+.tl-step.active .tl-label { color: var(--wine); font-weight: 700; }
+.tl-connector { width: 28px; height: 2px; background: var(--bord2); margin-top: 14px; flex-shrink: 0; }
+.tl-connector.done { background: var(--wine); }
+
+/* Élevage progress */
+.elevage-bar { margin: 8px 0 4px; }
+.elevage-track { height: 8px; background: var(--bg3); border-radius: 99px; overflow: hidden; }
+.elevage-fill { height: 100%; border-radius: 99px; background: linear-gradient(90deg, var(--wine), #c8403a); transition: width .6s; }
+.elevage-meta { display: flex; justify-content: space-between; font-size: 11px; color: var(--txt3); margin-top: 3px; }
+.elevage-badge { display: inline-flex; align-items: center; gap: 4px; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 99px; margin-top: 4px; }
+.eb-attente { background: var(--blue-l); color: var(--blue); }
+.eb-ok { background: var(--ok-l); color: var(--ok); }
+.eb-pret { background: var(--warn-l); color: var(--warn); }
+.eb-critique { background: var(--danger-l); color: var(--danger); }
+
+/* Fiche tirage */
+.tirage-card { background: linear-gradient(135deg, rgba(122,26,46,0.05), rgba(122,26,46,0.02)); border: 1.5px solid rgba(122,26,46,0.2); border-radius: var(--r); padding: 14px 16px; margin: 8px 0; }
+.tirage-title { font-size: 13px; font-weight: 700; color: var(--wine); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; display: flex; align-items: center; gap: 6px; }
+.tirage-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.tirage-field { background: var(--surf); border-radius: var(--rsm); padding: 8px 10px; }
+.tirage-field-label { font-size: 10px; color: var(--txt3); margin-bottom: 3px; text-transform: uppercase; letter-spacing: .05em; }
+.tirage-field-val { font-size: 15px; font-weight: 600; color: var(--txt); font-family: 'DM Serif Display', serif; }
+.tirage-field-unit { font-size: 11px; color: var(--txt3); font-weight: 400; }
+
+
+/* ── FICHE DÉGORGEMENT ── */
+.deg-card { background: linear-gradient(135deg, rgba(26,90,154,0.05), rgba(26,90,154,0.02)); border: 1.5px solid rgba(26,90,154,0.2); border-radius: var(--r); padding: 14px 16px; margin: 8px 0; }
+.deg-title { font-size: 13px; font-weight: 700; color: var(--blue); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+.deg-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.deg-field { background: var(--surf); border-radius: var(--rsm); padding: 8px 10px; }
+.deg-field-label { font-size: 10px; color: var(--txt3); margin-bottom: 3px; text-transform: uppercase; letter-spacing: .05em; }
+.deg-field-val { font-size: 15px; font-weight: 600; color: var(--txt); font-family: 'DM Serif Display', serif; }
+.deg-field-unit { font-size: 11px; color: var(--txt3); font-weight: 400; }
+.rendement-chip { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 99px; font-size: 12px; font-weight: 600; margin-top: 6px; }
+.rend-ok   { background: var(--ok-l); color: var(--ok); }
+.rend-warn { background: var(--warn-l); color: var(--warn); }
+.rend-bad  { background: var(--danger-l); color: var(--danger); }
+
+/* ── DÉGUSTATION ── */
+.degustation-card { background: rgba(46,138,90,0.04); border: 1.5px solid rgba(46,138,90,0.2); border-radius: var(--r); padding: 14px 16px; margin: 8px 0; }
+.deg2-title { font-size: 13px; font-weight: 700; color: var(--teal); text-transform: uppercase; letter-spacing: .06em; margin-bottom: 10px; }
+.deg2-decision { display: inline-flex; align-items: center; gap: 5px; padding: 4px 12px; border-radius: 99px; font-size: 12px; font-weight: 600; margin-top: 6px; }
+.dec-valider  { background: var(--ok-l); color: var(--ok); }
+.dec-prolonger { background: var(--warn-l); color: var(--warn); }
+
+/* ── LOCALISATION ── */
+.lot-location { display: inline-flex; align-items: center; gap: 5px; background: var(--bg3); border: .5px solid var(--bord2); border-radius: var(--rsm); padding: 4px 10px; font-size: 12px; color: var(--txt2); margin-top: 6px; }
+
+/* ── KPI DASHBOARD ── */
+.kpi-section { padding: 14px 16px 0; }
+.kpi-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-bottom: 12px; }
+.kpi-card { background: var(--surf); border: 1px solid var(--bord); border-radius: var(--r); padding: 14px 16px; }
+.kpi-val { font-size: 28px; font-weight: 300; color: var(--wine); font-family: 'DM Serif Display', serif; line-height: 1; }
+.kpi-label { font-size: 11px; color: var(--txt3); margin-top: 3px; }
+.kpi-sub { font-size: 12px; color: var(--txt2); margin-top: 4px; }
+.kpi-card.alert { border-color: rgba(192,32,16,0.25); }
+.kpi-card.ok { border-color: rgba(42,122,32,0.2); }
+
+
+/* ── 4-TAB NAV ADDITIONS ── */
+.plan-date-hdr{background:var(--wine)}
+.plan-service-tabs{display:flex;overflow-x:auto;scrollbar-width:none;background:var(--surf);border-bottom:1px solid var(--bord)}
+.plan-service-tabs::-webkit-scrollbar{display:none}
+.pst{padding:10px 16px;font-size:13px;font-weight:500;cursor:pointer;color:var(--txt3);white-space:nowrap;border-bottom:2px solid transparent;flex-shrink:0}
+.pst.active{color:var(--wine);border-bottom-color:var(--wine)}
+
+/* ── PROD TILES ── */
+.prod-tile{background:var(--surf);border:1px solid var(--bord);border-radius:var(--r);padding:20px 16px;display:flex;flex-direction:column;align-items:center;gap:6px;cursor:pointer;transition:border-color .15s;text-align:center}
+.prod-tile:active{border-color:var(--wine)}
+.prod-tile-icon{font-size:34px}
+.prod-tile-lbl{font-size:14px;font-weight:500;color:var(--txt)}
+.prod-tile-sub{font-size:11px;color:var(--txt3)}
+
+/* ── PLAN ITEMS ── */
+.plan-item-card{background:var(--surf);border-radius:var(--r);margin-bottom:10px;overflow:hidden;display:flex;cursor:pointer}
+.plan-item-card:active{opacity:.8}
+.plan-stripe-u{background:var(--danger);width:5px;flex-shrink:0}
+.plan-stripe-n{background:var(--warn);width:5px;flex-shrink:0}
+.plan-stripe-b{background:var(--ok);width:5px;flex-shrink:0}
+.plan-stripe-d{background:#ccc;width:5px;flex-shrink:0}
+.plan-item-body{flex:1;padding:13px 14px;min-width:0}
+.plan-item-title{font-size:15px;font-weight:500;color:var(--txt);margin-bottom:5px}
+.plan-item-title.done{text-decoration:line-through;color:var(--txt3);font-weight:400}
+.plan-item-meta{font-size:12px;color:var(--txt3);display:flex;gap:8px;flex-wrap:wrap}
+.plan-item-done{font-size:11px;color:var(--ok);font-weight:500;margin-top:4px}
+.plan-item-check{padding:0 14px;display:flex;align-items:center;font-size:22px;color:var(--txt4)}
+.plan-item-check.done{color:var(--ok)}
+.plan-tag-ot{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;background:var(--wine-dim);color:var(--wine)}
+.plan-tag-t{font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;background:var(--blue-l);color:var(--blue)}
+.absent-strip{display:flex;gap:7px;flex-wrap:wrap;padding:8px 16px;border-bottom:1px solid var(--bord)}
+.absent-chip{background:var(--danger-l);border:1px solid rgba(192,32,16,.2);border-radius:99px;padding:4px 11px;font-size:12px;color:var(--danger);font-weight:500}
+
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.cuve-card,.plan-item,.an-card,.lot-card{animation:fadeUp .2s ease both}
+</style>
+</head>
+<body>
+
+<div class="toast" id="toast"></div>
+<div class="xp-notif" id="xp-notif"></div>
+<canvas id="confetti-canvas"></canvas>
+
+<!-- ══════════ LOGIN ══════════ -->
+<div id="login-screen">
+  <div class="login-logo">🍷</div>
+  <div class="login-app">CuverieApp</div>
+  <div class="login-sub">Millésime 2025</div>
+  <div class="login-box">
+    <div class="lfield"><label>Email</label><input type="email" id="li-email" placeholder="votre@email.com" autocomplete="email"></div>
+    <div class="lfield"><label>Mot de passe</label><input type="password" id="li-pwd" placeholder="••••••••" autocomplete="current-password"></div>
+    <button class="lbtn" onclick="doLogin()">Se connecter</button>
+    <div class="lerr" id="li-err"></div>
+  </div>
+</div>
+
+<!-- ══════════ APP ══════════ -->
+<div class="app" id="main-app" style="display:none">
+
+  <div class="header">
+    <div>
+      <div class="header-logo">🍷 Cuverie</div>
+      <div class="header-sub" id="hdr-sub">Millésime 2025</div>
+    </div>
+    <div style="display:flex;align-items:center;gap:8px">
+      <div class="user-pill">
+        <div class="user-av" id="user-av">?</div>
+        <div class="user-name" id="user-nm">—</div>
+        <div class="user-role" id="user-role">—</div>
+      </div>
+      <div class="logout-btn" onclick="doLogout()">⏻</div>
+    </div>
+  </div>
+
+  <div class="xp-wrap" id="xp-wrap" style="display:none">
+    <div class="xp-lv" id="xp-lv">Nv.1</div>
+    <div class="xp-track"><div class="xp-fill" id="xp-fill" style="width:0%"></div></div>
+    <div class="xp-pts" id="xp-pts">0 XP</div>
+  </div>
+
+  <div class="scroll" id="main-scroll">
+
+    <!-- ══ PAGE: PLANNING ══ -->
+    <div class="page active" id="page-plan">
+      <div class="plan-date-hdr" style="background:var(--wine);padding:10px 16px;display:flex;align-items:center;justify-content:space-between">
+        <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:#fff" onclick="changeDay(-1)">‹</div>
+        <div id="plan-date-lbl" style="font-size:15px;font-weight:500;color:#fff;font-family:'DM Serif Display',serif">Aujourd'hui</div>
+        <div style="width:32px;height:32px;border-radius:50%;background:rgba(255,255,255,.2);display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:18px;color:#fff" onclick="changeDay(1)">›</div>
+      </div>
+      <div id="plan-absents"></div>
+      <div class="plan-service-tabs" id="plan-stabs">
+        <div class="pst active" onclick="setPlanSvc('all',this)">Tout</div>
+        <div class="pst" onclick="setPlanSvc('tirage',this)">Tirage</div>
+        <div class="pst" onclick="setPlanSvc('cave',this)">Cave</div>
+        <div class="pst" onclick="setPlanSvc('degorgement',this)">Dégorgement</div>
+        <div class="pst" onclick="setPlanSvc('depot',this)">Dépôt</div>
+        <div class="pst" onclick="setPlanSvc('annexe',this)">Annexe</div>
+      </div>
+      <div style="padding:14px 16px 0" id="plan-list"></div>
+    </div>
+
+    <!-- ══ PAGE: PRODUCTION ══ -->
+    <div class="page" id="page-prod">
+      <div id="prod-home">
+        <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:16px">
+          <div class="prod-tile" onclick="showProdSub('cuves')"><div class="prod-tile-icon">⬡</div><div class="prod-tile-lbl">Cuves</div><div class="prod-tile-sub" id="pt-cuves">—</div></div>
+          <div class="prod-tile" onclick="showProdSub('lots')"><div class="prod-tile-icon">◈</div><div class="prod-tile-lbl">Lots</div><div class="prod-tile-sub" id="pt-lots">—</div></div>
+          <div class="prod-tile" onclick="showProdSub('analyses')"><div class="prod-tile-icon">⚗</div><div class="prod-tile-lbl">Analyses</div><div class="prod-tile-sub" id="pt-analyses">—</div></div>
+          <div class="prod-tile" onclick="showProdSub('stock')"><div class="prod-tile-icon">📦</div><div class="prod-tile-lbl">Stock</div><div class="prod-tile-sub" id="pt-stock">—</div></div>
+          <div class="prod-tile" onclick="showProdSub('histo')"><div class="prod-tile-icon">📜</div><div class="prod-tile-lbl">Historique</div><div class="prod-tile-sub">Traçabilité</div></div>
+          <div class="prod-tile" onclick="showProdSub('kpi')"><div class="prod-tile-icon">📊</div><div class="prod-tile-lbl">KPI</div><div class="prod-tile-sub">Production</div></div>
+        </div>
+      </div>
+      <div id="prod-sub" style="display:none">
+        <div style="display:flex;align-items:center;gap:8px;padding:12px 16px;background:var(--surf);border-bottom:1px solid var(--bord);cursor:pointer" onclick="hideProdSub()">
+          <span style="font-size:18px;color:var(--wine)">‹</span>
+          <span style="font-size:14px;font-weight:500;color:var(--wine)" id="prod-sub-title">Retour</span>
+        </div>
+        <div id="prod-sub-content" style="padding:14px 16px 0"></div>
+      </div>
+    </div>
+
+    <!-- ══ PAGE: MAINTENANCE ══ -->
+    <div class="page" id="page-maint">
+      <div class="fpills">
+        <div class="fpill active" onclick="filterInc('all',this)">Tous</div>
+        <div class="fpill" onclick="filterInc('ouvert',this)">🔴 Ouverts</div>
+        <div class="fpill" onclick="filterInc('en_cours',this)">🟡 En cours</div>
+        <div class="fpill" onclick="filterInc('resolu',this)">✅ Résolus</div>
+      </div>
+      <div style="padding:0 16px" id="inc-list-maint"><div class="loading">Chargement…</div></div>
+    </div>
+
+    <!-- ══ PAGE: MESSAGES ══ -->
+    <div class="page" id="page-msgs">
+      <div id="emp-msg-area" style="display:none;padding:16px">
+        <div onclick="openSheet('s-newmsg')" style="display:flex;align-items:center;justify-content:center;gap:8px;padding:16px;background:var(--wine-dim);border:1px solid rgba(122,26,46,.2);border-radius:var(--r);font-size:15px;font-weight:500;color:var(--wine);cursor:pointer;margin-bottom:12px">
+          ✉️ Envoyer un message au chef de cave
+        </div>
+      </div>
+      <div id="admin-msg-area" style="display:none">
+        <div class="section" style="margin-top:14px">
+          <div class="slabel">Messages <span id="msg-unread-lbl" style="color:var(--danger);font-weight:700"></span></div>
+          <div id="msg-list-admin"></div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- /scroll -->
+
+  <div class="fab" id="fab" onclick="fabAction()">＋</div>
+
+  <nav class="bnav">
+    <div class="nb active" onclick="showPage('plan',this)">
+      <div style="position:relative;display:inline-block">
+        <div class="nb-icon">📋</div>
+        <div class="nav-badge" id="badge-plan" style="display:none"></div>
+      </div>
+      <div class="nb-lbl">Planning</div>
+    </div>
+    <div class="nb" onclick="showPage('prod',this)">
+      <div class="nb-icon">🍾</div>
+      <div class="nb-lbl">Production</div>
+    </div>
+    <div class="nb" onclick="showPage('maint',this)">
+      <div style="position:relative;display:inline-block">
+        <div class="nb-icon">🔧</div>
+        <div class="nav-badge" id="badge-maint" style="display:none"></div>
+      </div>
+      <div class="nb-lbl">Maintenance</div>
+    </div>
+    <div class="nb" onclick="showPage('msgs',this)">
+      <div style="position:relative;display:inline-block">
+        <div class="nb-icon">💬</div>
+        <div class="nav-badge" id="badge-msgs" style="display:none"></div>
+      </div>
+      <div class="nb-lbl">Messages</div>
+    </div>
+  </nav>
+</div>
+
+<!-- ══════════ SHEETS ══════════ -->
+
+<!-- MENU + -->
+<div class="overlay" id="ov-menu" onclick="closeSheet('menu')"></div>
+<div class="sheet" id="sh-menu">
+  <div class="sh-handle"></div>
+  <div class="sh-title">Ajouter…</div>
+  <div class="sh-body" style="display:flex;flex-direction:column;gap:10px">
+    <button class="fbtn fbtn-cancel" style="text-align:left" id="btn-new-item" onclick="closeSheet('menu');openSheet('new-item')">📋 &nbsp;Nouvelle tâche / OT</button>
+    <button class="fbtn fbtn-cancel" style="text-align:left" id="btn-new-cuve" onclick="closeSheet('menu');openSheet('new-cuve')">⬡ &nbsp;Nouveau contenant</button>
+    <button class="fbtn fbtn-cancel" style="text-align:left" onclick="closeSheet('menu');openSheet('new-analyse')">⚗ &nbsp;Analyse</button>
+    <button class="fbtn fbtn-cancel" style="text-align:left" onclick="closeSheet('menu');openSheet('new-inc')">🔧 &nbsp;Signaler un incident</button>
+    <button class="fbtn fbtn-cancel" style="text-align:left" id="btn-new-lot" onclick="closeSheet('menu');openSheet('new-lot')">◈ &nbsp;Nouveau lot</button>
+  </div>
+</div>
+
+<!-- NOUVELLE TÂCHE / OT -->
+<div class="overlay" id="ov-new-item" onclick="closeSheet('new-item')"></div>
+<div class="sheet" id="sh-new-item">
+  <div class="sh-handle"></div>
+  <div class="sh-title" id="ni-title">Nouvelle tâche / OT</div>
+  <div class="sh-body">
+    <div class="frow">
+      <label class="fl">Type</label>
+      <select id="ni-type" onchange="updateItemForm()">
+        <option value="tache">📋 Tâche simple</option>
+        <option value="ot">⬡ OT Cave (lié à une cuve)</option>
+      </select>
+    </div>
+    <div class="frow"><label class="fl">Titre / Description</label>
+      <input id="ni-titre" placeholder="ex: Nettoyer les tuyaux, Soutirage C-03 → C-10…">
+    </div>
+    <!-- OT fields, hidden for tache -->
+    <div id="ni-ot-fields" style="display:none">
+      <div class="fsep">Infos cave</div>
+      <div class="fg2">
+        <div class="frow"><label class="fl">Opération</label>
+          <select id="ni-op">
+            <option value="transfert">Transfert</option>
+            <option value="filtration">Filtration</option>
+            <option value="soutirage">Soutirage</option>
+            <option value="assemblage">Assemblage</option>
+            <option value="levurage">Levurage</option>
+            <option value="produit">Ajout produit</option>
+            <option value="tirage">Tirage / MeB</option>
+            <option value="rincage">Rinçage</option>
+            <option value="desinfection">Désinfection</option>
+            <option value="detartrage">Détartrage</option>
+          </select>
+        </div>
+        <div class="frow"><label class="fl">Cuve(s)</label>
+          <input id="ni-cuves" placeholder="ex: C-03, CV-07">
+        </div>
+      </div>
+      <div class="frow"><label class="fl">Détails (volume, produit…)</label>
+        <input id="ni-detail" placeholder="ex: 80 hL vers C-10, Bentonite 50g/hL…">
+      </div>
+    </div>
+    <div class="fsep">Organisation</div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Importance</label>
+        <select id="ni-prio-old">
+          <option value="urgent">🔴 Urgent</option>
+          <option value="normal" selected>🟡 Normal</option>
+          <option value="bas">🟢 Bas</option>
+        </select>
+      </div>
+      <div class="frow"><label class="fl">Date limite</label>
+        <input id="ni-date" type="date">
+      </div>
+    </div>
+    <div class="frow"><label class="fl">Assigné à</label>
+      <select id="ni-assign">
+        <option value="tous">👥 Toute l'équipe</option>
+      </select>
+    </div>
+    <div class="frow"><label class="fl">Notes complémentaires</label>
+      <textarea id="ni-notes" placeholder="Consignes, quantités, précautions…"></textarea>
+    </div>
+    <div class="factions">
+      <button class="fbtn fbtn-cancel" onclick="closeSheet('new-item')">Annuler</button>
+      <button class="fbtn fbtn-save" onclick="saveItem()">Créer</button>
+    </div>
+  </div>
+</div>
+
+<!-- CLÔTURE TÂCHE/OT -->
+<div class="overlay" id="ov-clot" onclick="closeSheet('clot')"></div>
+<div class="sheet" id="sh-clot">
+  <div class="sh-handle"></div>
+  <div class="sh-title">Marquer comme fait ✓</div>
+  <div class="sh-body">
+    <div class="clot-info" id="clot-info"></div>
+    <div class="frow"><label class="fl">Commentaire (optionnel)</label>
+      <textarea id="clot-comment" placeholder="Tout s'est bien passé ? Un point à noter ?"></textarea>
+    </div>
+    <div class="factions">
+      <button class="fbtn fbtn-cancel" onclick="closeSheet('clot')">Annuler</button>
+      <button class="fbtn fbtn-save" onclick="cloturerItem()">✓ Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOUVELLE CUVE -->
+<div class="overlay" id="ov-new-cuve" onclick="closeSheet('new-cuve')"></div>
+<div class="sheet" id="sh-new-cuve">
+  <div class="sh-handle"></div>
+  <div class="sh-title">Nouveau contenant</div>
+  <div class="sh-body">
+    <div class="fg2">
+      <div class="frow"><label class="fl">Nom / N°</label><input id="nc-nom" placeholder="C-15 ou CV-16"></div>
+      <div class="frow"><label class="fl">Type</label><select id="nc-type"><option value="cuve">Cuve</option><option value="cuvon">Cuvon</option></select></div>
+    </div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Capacité (hL)</label><input id="nc-cap" type="number" inputmode="numeric"></div>
+      <div class="frow"><label class="fl">Volume actuel (hL)</label><input id="nc-vol" type="number" inputmode="numeric" placeholder="0"></div>
+    </div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Type de vin</label>
+        <select id="nc-typevin"><option value="">Vide</option><option value="methode">Méthode</option><option value="cremant">Crémant</option><option value="petnat">Pétnat</option></select>
+      </div>
+      <div class="frow"><label class="fl">Couleur</label>
+        <select id="nc-col"><option value="vide">Vide</option><option value="rouge">Rouge</option><option value="blanc">Blanc</option><option value="rose">Rosé</option></select>
+      </div>
+    </div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">État</label>
+        <select id="nc-etat"><option value="vide">Vide</option><option value="fermentation">Fermentation</option><option value="stabilise">Stabilisé</option><option value="attente">En attente</option><option value="nettoyage">Nettoyage</option></select>
+      </div>
+      <div class="frow"><label class="fl">Filtration</label>
+        <select id="nc-filtre"><option value="">—</option><option value="true">Filtré</option><option value="false">Non filtré</option></select>
+      </div>
+    </div>
+    <div class="frow"><label class="fl">Désignation / lot</label><input id="nc-desig" placeholder="ex: Crémant Blanc 2025"></div>
+    <div class="factions">
+      <button class="fbtn fbtn-cancel" onclick="closeSheet('new-cuve')">Annuler</button>
+      <button class="fbtn fbtn-save" onclick="saveCuve()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODIFIER CUVE -->
+<div class="overlay" id="ov-mod-cuve" onclick="closeSheet('mod-cuve')"></div>
+<div class="sheet" id="sh-mod-cuve">
+  <div class="sh-handle"></div>
+  <div class="sh-title" id="mc-title">Modifier la cuve</div>
+  <div class="sh-body">
+    <div id="mc-info" style="background:var(--bg3);border-radius:var(--rsm);padding:10px 13px;margin-bottom:14px;font-size:13px;color:var(--txt2)"></div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Volume actuel (hL)</label><input id="mc-vol" type="number" step="0.1" inputmode="decimal"></div>
+      <div class="frow"><label class="fl">État</label>
+        <select id="mc-etat"><option value="vide">Vide</option><option value="fermentation">Fermentation</option><option value="stabilise">Stabilisé</option><option value="attente">En attente</option><option value="nettoyage">Nettoyage</option></select>
+      </div>
+    </div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Type de vin</label>
+        <select id="mc-typevin"><option value="">Vide</option><option value="methode">Méthode</option><option value="cremant">Crémant</option><option value="petnat">Pétnat</option></select>
+      </div>
+      <div class="frow"><label class="fl">Couleur</label>
+        <select id="mc-col"><option value="vide">Vide</option><option value="rouge">Rouge</option><option value="blanc">Blanc</option><option value="rose">Rosé</option></select>
+      </div>
+    </div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Filtration</label>
+        <select id="mc-filtre"><option value="">—</option><option value="true">Filtré</option><option value="false">Non filtré</option></select>
+      </div>
+      <div class="frow"><label class="fl">Désignation</label><input id="mc-desig" placeholder="Lot, appellation…"></div>
+    </div>
+    <div class="factions">
+      <button class="fbtn fbtn-cancel" onclick="closeSheet('mod-cuve')">Annuler</button>
+      <button class="fbtn fbtn-save" onclick="saveModCuve()">✓ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- ANALYSE -->
+<div class="overlay" id="ov-new-analyse" onclick="closeSheet('new-analyse')"></div>
+<div class="sheet" id="sh-new-analyse">
+  <div class="sh-handle"></div>
+  <div class="sh-title">Saisir une analyse</div>
+  <div class="sh-body">
+    <div class="fg2">
+      <div class="frow"><label class="fl">Cuve / Cuvon</label><input id="fa-cuve" placeholder="ex: C-03"></div>
+      <div class="frow"><label class="fl">Date</label><input id="fa-date" type="date"></div>
+    </div>
+    <div class="fsep">Physico-chimique</div>
+    <div class="fg3">
+      <div class="frow"><label class="fl">TAV (°)</label><input id="fa-tav" type="number" step="0.1" inputmode="decimal"></div>
+      <div class="frow"><label class="fl">Densité</label><input id="fa-den" type="number" step="0.001" inputmode="decimal"></div>
+      <div class="frow"><label class="fl">Turbidité</label><input id="fa-turb" type="number" step="0.1" inputmode="decimal"></div>
+      <div class="frow"><label class="fl">pH</label><input id="fa-ph" type="number" step="0.01" inputmode="decimal"></div>
+      <div class="frow"><label class="fl">AT (g/L)</label><input id="fa-at" type="number" step="0.1" inputmode="decimal"></div>
+      <div class="frow"><label class="fl">AV (g/L)</label><input id="fa-av" type="number" step="0.01" inputmode="decimal"></div>
+    </div>
+    <div class="fsep">Sucres & acides</div>
+    <div class="fg3">
+      <div class="frow"><label class="fl">SR (g/L)</label><input id="fa-sr" type="number" step="0.1" inputmode="decimal"></div>
+      <div class="frow"><label class="fl">Glucose</label><input id="fa-glu" type="number" step="0.1" inputmode="decimal"></div>
+      <div class="frow"><label class="fl">Fructose</label><input id="fa-fru" type="number" step="0.1" inputmode="decimal"></div>
+      <div class="frow"><label class="fl">Ac. malique</label><input id="fa-mal" type="number" step="0.1" inputmode="decimal"></div>
+      <div class="frow"><label class="fl">Ac. lactique</label><input id="fa-lac" type="number" step="0.1" inputmode="decimal"></div>
+      <div class="frow"><label class="fl">SO₂ libre</label><input id="fa-so2" type="number" step="0.5" inputmode="decimal"></div>
+    </div>
+    <div class="frow"><label class="fl">Observations</label><textarea id="fa-obs" placeholder="Commentaires…"></textarea></div>
+    <div class="factions">
+      <button class="fbtn fbtn-cancel" onclick="closeSheet('new-analyse')">Annuler</button>
+      <button class="fbtn fbtn-save" onclick="saveAnalyse()">Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOUVEAU LOT -->
+<div class="overlay" id="ov-new-lot" onclick="closeSheet('new-lot')"></div>
+<div class="sheet" id="sh-new-lot">
+  <div class="sh-handle"></div>
+  <div class="sh-title">Nouveau lot</div>
+  <div class="sh-body">
+    <div class="fg2">
+      <div class="frow"><label class="fl">Référence</label><input id="nl-ref" placeholder="LOT-2025-001"></div>
+      <div class="frow"><label class="fl">Millésime</label><input id="nl-mil" type="number" placeholder="2025" inputmode="numeric"></div>
+    </div>
+    <div class="frow"><label class="fl">Désignation</label><input id="nl-desig" placeholder="ex: Crémant d'Alsace Blanc"></div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Type</label>
+        <select id="nl-type"><option value="methode">Méthode</option><option value="cremant">Crémant</option><option value="petnat">Pétnat</option></select>
+      </div>
+      <div class="frow"><label class="fl">Couleur</label>
+        <select id="nl-col"><option value="rouge">Rouge</option><option value="blanc">Blanc</option><option value="rose">Rosé</option></select>
+      </div>
+    </div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Volume (hL)</label><input id="nl-vol" type="number" inputmode="numeric"></div>
+      <div class="frow"><label class="fl">Date de tirage</label><input id="nl-tirage" type="date"></div>
+    </div>
+    <div class="frow"><label class="fl">Cuve de stockage</label>
+      <select id="nl-cuve-sel">
+        <option value="">— Sélectionner une cuve —</option>
+      </select>
+    </div>
+    <div class="factions">
+      <button class="fbtn fbtn-cancel" onclick="closeSheet('new-lot')">Annuler</button>
+      <button class="fbtn fbtn-save" onclick="saveLot()">Créer</button>
+    </div>
+  </div>
+</div>
+
+<!-- TRANSFERT LOT -->
+<div class="overlay" id="ov-trf-lot" onclick="closeSheet('trf-lot')"></div>
+<div class="sheet" id="sh-trf-lot">
+  <div class="sh-handle"></div>
+  <div class="sh-title">Modifier le lot</div>
+  <div class="sh-body">
+    <div id="trf-info" style="background:var(--bg3);border-radius:var(--rsm);padding:10px 13px;margin-bottom:14px;font-size:13px;color:var(--txt2)"></div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Volume (hL)</label><input id="trf-vol" type="number" step="0.1" inputmode="decimal"></div>
+      <div class="frow"><label class="fl">État</label>
+        <select id="trf-etat" onchange="toggleTirage()">
+          <option value="En cours">En cours</option>
+          <option value="Stabilisé">Stabilisé</option>
+          <option value="Prêt tirage">Prêt tirage</option>
+          <option value="En élevage">En élevage</option>
+          <option value="Assemblé">Assemblé</option>
+          <option value="Tiré">🍾 Tiré (vide la cuve)</option>
+        </select>
+        <div id="trf-tirage-warn" style="display:none;background:rgba(192,32,16,0.08);border:1px solid rgba(192,32,16,0.2);border-radius:var(--rsm);padding:8px 12px;font-size:12px;color:var(--danger);margin-top:6px">⚠️ La cuve sera vidée automatiquement</div>
+      </div>
+    </div>
+    <div class="frow"><label class="fl">Cuve de stockage</label>
+      <select id="trf-cuve-sel"><option value="">— Sélectionner —</option></select>
+    </div>
+    <div class="fsep">🍾 Fiche de tirage</div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Date de tirage</label><input id="trf-tirage" type="date"></div>
+      <div class="frow"><label class="fl">Nb bouteilles</label><input id="trf-btl" type="number" inputmode="numeric" placeholder="ex: 16000"></div>
+    </div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Liqueur tirage (g/L sucre)</label><input id="trf-liqueur" type="number" step="0.1" inputmode="decimal" placeholder="ex: 24"></div>
+      <div class="frow"><label class="fl">Cuve levain</label><input id="trf-levain" placeholder="ex: L-02"></div>
+    </div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Levures (g/hL)</label><input id="trf-levures" type="number" step="0.5" inputmode="decimal" placeholder="ex: 20"></div>
+      <div class="frow"><label class="fl">Bentonite (g/hL)</label><input id="trf-bentonite" type="number" step="0.5" inputmode="decimal" placeholder="ex: 50"></div>
+    </div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Élevage cible (mois)</label><input id="trf-elevage" type="number" inputmode="numeric" placeholder="ex: 12"></div>
+      <div class="frow"><label class="fl">Pression objectif (bar)</label><input id="trf-pression" type="number" step="0.1" inputmode="decimal" placeholder="ex: 5.5"></div>
+    </div>
+    <div class="fsep">📍 Localisation cave</div>
+    <div class="frow"><label class="fl">Emplacement (zone / palette / rang)</label>
+      <input id="trf-emplacement" placeholder="ex: Zone A — Palette 12 — Rang 3">
+    </div>
+    <div class="fsep">✂️ Fiche dégorgement</div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Date dégorgement</label><input id="deg-date" type="date"></div>
+      <div class="frow"><label class="fl">Cols dégorgés</label><input id="deg-cols" type="number" inputmode="numeric" placeholder="ex: 15820"></div>
+    </div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Perte / casse</label><input id="deg-perte" type="number" inputmode="numeric" placeholder="ex: 180"></div>
+      <div class="frow"><label class="fl">Dosage expédition (g/L)</label><input id="deg-dosage" type="number" step="0.1" inputmode="decimal" placeholder="ex: 8"></div>
+    </div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Type bouchage</label>
+        <select id="deg-bouchage">
+          <option value="">—</option>
+          <option value="brut_nature">Brut Nature (0-3 g/L)</option>
+          <option value="extra_brut">Extra Brut (0-6 g/L)</option>
+          <option value="brut">Brut (0-12 g/L)</option>
+          <option value="extra_dry">Extra Dry (12-17 g/L)</option>
+          <option value="sec">Sec (17-32 g/L)</option>
+          <option value="demi_sec">Demi-sec (32-50 g/L)</option>
+        </select>
+      </div>
+      <div class="frow"><label class="fl">Lot habillage</label><input id="deg-habillage" placeholder="ex: HAB-2025-001"></div>
+    </div>
+    <div class="fsep">🍷 Dégustation pré-dégorgement</div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Bulle</label><input id="deg2-bulle" placeholder="fine, crémeuse..."></div>
+      <div class="frow"><label class="fl">Aspect</label><input id="deg2-aspect" placeholder="limpide, trouble..."></div>
+    </div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Nez</label><input id="deg2-nez" placeholder="brioche, agrumes..."></div>
+      <div class="frow"><label class="fl">Bouche / Équilibre</label><input id="deg2-bouche" placeholder="frais, équilibré..."></div>
+    </div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Décision</label>
+        <select id="deg2-decision">
+          <option value="">—</option>
+          <option value="valider">✅ Valider pour dégorgement</option>
+          <option value="prolonger">⏳ Prolonger l'élevage</option>
+          <option value="analyser">🔬 Analyse complémentaire</option>
+        </select>
+      </div>
+      <div class="frow"><label class="fl">Commentaire</label><input id="deg2-comment" placeholder="Notes libres..."></div>
+    </div>
+    <div class="factions">
+      <button class="fbtn fbtn-cancel" onclick="closeSheet('trf-lot')">Annuler</button>
+      <button class="fbtn fbtn-save" onclick="saveTrfLot()">✓ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+
+<!-- NOUVEAU MESSAGE -->
+<div class="overlay" id="ov-new-msg" onclick="closeSheet('new-msg')"></div>
+<div class="sheet" id="sh-new-msg">
+  <div class="sh-handle"></div>
+  <div class="sh-title">Message au chef de cave</div>
+  <div class="sh-body">
+    <div class="frow">
+      <label class="fl">Importance</label>
+      <select id="nm-prio">
+        <option value="urgent">🔴 Urgent — besoin rapide</option>
+        <option value="normal" selected>🟡 Normal</option>
+        <option value="info">🔵 Info seulement</option>
+      </select>
+    </div>
+    <div class="frow">
+      <label class="fl">Catégorie</label>
+      <select id="nm-cat">
+        <option value="commande">📦 Commander quelque chose</option>
+        <option value="maintenance">🔧 Maintenance / réparation</option>
+        <option value="probleme">⚠️ Problème à signaler</option>
+        <option value="info">💬 Information générale</option>
+        <option value="autre">Autre</option>
+      </select>
+    </div>
+    <div class="frow">
+      <label class="fl">Message</label>
+      <textarea id="nm-text" placeholder="Décrivez ce dont vous avez besoin ou ce que vous voulez signaler…" style="min-height:100px"></textarea>
+    </div>
+    <div class="factions">
+      <button class="fbtn fbtn-cancel" onclick="closeSheet('new-msg')">Annuler</button>
+      <button class="fbtn fbtn-save" onclick="sendMsg()">✉️ Envoyer</button>
+    </div>
+  </div>
+</div>
+
+<!-- NOUVEL INCIDENT -->
+
+
+<!-- AJOUT PRODUIT STOCK -->
+<div class="overlay" id="ov-new-inv" onclick="closeSheet('new-inv')"></div>
+<div class="sheet" id="sh-new-inv">
+  <div class="sh-handle"></div>
+  <div class="sh-title">Ajouter un produit</div>
+  <div class="sh-body">
+    <div class="frow"><label class="fl">Nom du produit</label>
+      <input id="nv-nom" placeholder="ex: Bentonite, Levures EC-1118, Capsules…">
+    </div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Catégorie</label>
+        <select id="nv-cat">
+          <option value="oenologique">🧪 Œnologique</option>
+          <option value="conditionnement">📦 Conditionnement</option>
+          <option value="materiel">🔧 Matériel</option>
+        </select>
+      </div>
+      <div class="frow"><label class="fl">Unité</label>
+        <select id="nv-unite">
+          <option value="kg">kg</option>
+          <option value="g">g</option>
+          <option value="L">L</option>
+          <option value="mL">mL</option>
+          <option value="unité">unité</option>
+          <option value="carton">carton</option>
+          <option value="palette">palette</option>
+        </select>
+      </div>
+    </div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Quantité en stock</label>
+        <input id="nv-qty" type="number" step="0.1" inputmode="decimal" placeholder="0">
+      </div>
+      <div class="frow"><label class="fl">Seuil d'alerte</label>
+        <input id="nv-seuil" type="number" step="0.1" inputmode="decimal" placeholder="Alerte si ≤">
+      </div>
+    </div>
+    <div class="factions">
+      <button class="fbtn fbtn-cancel" onclick="closeSheet('new-inv')">Annuler</button>
+      <button class="fbtn fbtn-save" onclick="saveInventaire()">Ajouter</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODIFIER STOCK -->
+<div class="overlay" id="ov-mod-inv" onclick="closeSheet('mod-inv')"></div>
+<div class="sheet" id="sh-mod-inv">
+  <div class="sh-handle"></div>
+  <div class="sh-title" id="mod-inv-title">Modifier le stock</div>
+  <div class="sh-body">
+    <div id="mod-inv-info" style="background:var(--bg3);border-radius:var(--rsm);padding:10px 13px;margin-bottom:14px;font-size:13px;color:var(--txt2)"></div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Nouvelle quantité</label>
+        <input id="mi-qty" type="number" step="0.1" inputmode="decimal">
+      </div>
+      <div class="frow"><label class="fl">Seuil d'alerte</label>
+        <input id="mi-seuil" type="number" step="0.1" inputmode="decimal">
+      </div>
+    </div>
+    <div class="frow"><label class="fl">Mouvement</label>
+      <select id="mi-mouv">
+        <option value="set">📌 Définir la quantité exacte</option>
+        <option value="add">➕ Ajouter au stock</option>
+        <option value="sub">➖ Retirer du stock</option>
+      </select>
+    </div>
+    <div class="factions">
+      <button class="fbtn fbtn-cancel" onclick="closeSheet('mod-inv')">Annuler</button>
+      <button class="fbtn fbtn-save" onclick="saveModInv()">✓ Enregistrer</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHEET: CLÔTURE v2 -->
+<div class="overlay" id="ov-s-clot2" onclick="closeSheet('s-clot2')"></div>
+<div class="sheet" id="sh-s-clot2">
+  <div class="sh-handle"></div>
+  <div class="sh-title">Marquer comme fait ✓</div>
+  <div class="sh-body">
+    <div class="clot-info" id="clot2-info" style="background:var(--bg3);border-radius:var(--rsm);padding:12px 14px;margin-bottom:14px"></div>
+    <div class="frow"><label class="fl">Commentaire (optionnel)</label>
+      <textarea id="clot2-comment" placeholder="Tout s'est bien passé ?"></textarea>
+    </div>
+    <div class="factions">
+      <button class="fbtn fbtn-cancel" onclick="closeSheet('s-clot2')">Annuler</button>
+      <button class="fbtn fbtn-save" onclick="cloturerItem2()">✓ Confirmer</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHEET: NOUVEAU MESSAGE (employé) -->
+<div class="overlay" id="ov-s-newmsg" onclick="closeSheet('s-newmsg')"></div>
+<div class="sheet" id="sh-s-newmsg">
+  <div class="sh-handle"></div>
+  <div class="sh-title">Message au chef de cave</div>
+  <div class="sh-body">
+    <div class="fg2">
+      <div class="frow"><label class="fl">Importance</label>
+        <select id="nm2-prio"><option value="urgent">🔴 Urgent</option><option value="normal" selected>🟡 Normal</option><option value="info">🔵 Info</option></select>
+      </div>
+      <div class="frow"><label class="fl">Catégorie</label>
+        <select id="nm2-cat"><option value="commande">📦 Commander</option><option value="maintenance">🔧 Maintenance</option><option value="probleme">⚠️ Problème</option><option value="info">💬 Info</option></select>
+      </div>
+    </div>
+    <div class="frow"><label class="fl">Message</label>
+      <textarea id="nm2-text" placeholder="Décrivez votre demande…" style="min-height:100px"></textarea>
+    </div>
+    <div class="factions">
+      <button class="fbtn fbtn-cancel" onclick="closeSheet('s-newmsg')">Annuler</button>
+      <button class="fbtn fbtn-save" onclick="sendMsg2()">✉️ Envoyer</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHEET: NOUVEL INCIDENT -->
+<div class="overlay" id="ov-s-newinc" onclick="closeSheet('s-newinc')"></div>
+<div class="sheet" id="sh-s-newinc">
+  <div class="sh-handle"></div>
+  <div class="sh-title">Signaler un incident</div>
+  <div class="sh-body">
+    <div class="frow"><label class="fl">Titre</label><input id="ni2-titre" placeholder="ex: Pompe HS, Fuite vanne…"></div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Urgence</label>
+        <select id="ni2-prio"><option value="urgent">🔴 Urgent</option><option value="normal" selected>🟡 Normal</option><option value="bas">🟢 Bas</option></select>
+      </div>
+      <div class="frow"><label class="fl">Cuve</label><input id="ni2-cuve" placeholder="optionnel"></div>
+    </div>
+    <div class="frow"><label class="fl">Description</label><textarea id="ni2-desc"></textarea></div>
+    <div class="factions">
+      <button class="fbtn fbtn-cancel" onclick="closeSheet('s-newinc')">Annuler</button>
+      <button class="fbtn fbtn-save" onclick="saveInc2()">🔧 Signaler</button>
+    </div>
+  </div>
+</div>
+
+<!-- SHEET: MENU + (admin) -->
+<div class="overlay" id="ov-s-menu" onclick="closeSheet('s-menu')"></div>
+<div class="sheet" id="sh-s-menu">
+  <div class="sh-handle"></div>
+  <div class="sh-title">Ajouter…</div>
+  <div class="sh-body" style="display:flex;flex-direction:column;gap:10px">
+    <button class="fbtn fbtn-cancel" style="text-align:left" onclick="closeSheet('s-menu');openSheet('s-newplan')">📋 Tâche / OT</button>
+    <button class="fbtn fbtn-cancel" style="text-align:left" onclick="closeSheet('s-menu');openSheet('new-cuve')">⬡ Nouveau contenant</button>
+    <button class="fbtn fbtn-cancel" style="text-align:left" onclick="closeSheet('s-menu');openSheet('new-lot')">◈ Nouveau lot</button>
+    <button class="fbtn fbtn-cancel" style="text-align:left" onclick="closeSheet('s-menu');openSheet('new-analyse')">⚗ Analyse</button>
+    <button class="fbtn fbtn-cancel" style="text-align:left" onclick="closeSheet('s-menu');openSheet('s-newinc')">🔧 Incident</button>
+    <button class="fbtn fbtn-cancel" style="text-align:left" onclick="closeSheet('s-menu');openSheet('new-inv')">📦 Produit stock</button>
+  </div>
+</div>
+
+<!-- SHEET: NOUVELLE TÂCHE/OT -->
+<div class="overlay" id="ov-s-newplan" onclick="closeSheet('s-newplan')"></div>
+<div class="sheet" id="sh-s-newplan">
+  <div class="sh-handle"></div>
+  <div class="sh-title">Nouvelle tâche / OT</div>
+  <div class="sh-body">
+    <div class="frow"><label class="fl">Type</label>
+      <select id="snp-type" onchange="toggleOTFieldsNew()">
+        <option value="tache">📋 Tâche simple</option>
+        <option value="ot">⬡ OT Cave</option>
+      </select>
+    </div>
+    <div class="frow"><label class="fl">Titre</label><input id="snp-titre" placeholder="ex: Soutirage C-03, Réunion…"></div>
+    <div id="snp-ot-fields" style="display:none">
+      <div class="fg2">
+        <div class="frow"><label class="fl">Opération</label>
+          <select id="snp-op">
+            <option value="transfert">Transfert</option><option value="filtration">Filtration</option>
+            <option value="tirage">Tirage</option><option value="rincage">Rinçage</option>
+            <option value="soutirage">Soutirage</option><option value="assemblage">Assemblage</option>
+          </select>
+        </div>
+        <div class="frow"><label class="fl">Cuve(s)</label><input id="snp-cuves" placeholder="ex: C-03"></div>
+      </div>
+    </div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Service</label>
+        <select id="snp-service">
+          <option value="cave">Cave</option><option value="tirage">Tirage</option>
+          <option value="degorgement">Dégorgement</option><option value="depot">Dépôt</option>
+          <option value="annexe">Annexe</option>
+        </select>
+      </div>
+      <div class="frow"><label class="fl">Importance</label>
+        <select id="snp-prio"><option value="urgent">🔴 Urgent</option><option value="normal" selected>🟡 Normal</option><option value="bas">🟢 Bas</option></select>
+      </div>
+    </div>
+    <div class="fg2">
+      <div class="frow"><label class="fl">Date</label><input id="snp-date" type="date"></div>
+      <div class="frow"><label class="fl">Assigné à</label><select id="snp-assign"><option value="tous">Toute l'équipe</option></select></div>
+    </div>
+    <div class="frow"><label class="fl">Notes</label><textarea id="snp-notes"></textarea></div>
+    <div class="factions">
+      <button class="fbtn fbtn-cancel" onclick="closeSheet('s-newplan')">Annuler</button>
+      <button class="fbtn fbtn-save" onclick="savePlanNew()">Créer</button>
+    </div>
+  </div>
+</div>
+<!-- ══════════ JAVASCRIPT ══════════ -->
+<script>
+'use strict';
+// ── SUPABASE ──
+const { createClient } = window.supabase;
+const sb = createClient(SUPABASE_URL, SUPABASE_KEY);
+
+// ── STATE ──
+let me = null, myRole = 'employé', myPrenom = '';
+let curPage = 'dash', planFilter = 'all', cuveFilter = 'all', lotFilter = 'all';
+let pendingClotId = null, pendingModCuveId = null, pendingTrfLotId = null;
+let db = { items:[], cuves:[], analyses:[], lots:[], profiles:[], messages:[], historique:[], incidents:[], inventaire:[] };
+let histoFilter='all', incFilter='all', invFilter='all';
+let pendingModInvId=null, pendingIncId=null;
+
+// ── CONSTANTS ──
+const PRIO = { urgent:'🔴', normal:'🟡', bas:'🟢' };
+const PRIO_STRIPE = { urgent:'stripe-urgent', normal:'stripe-normal', bas:'stripe-bas' };
+const OP_LABELS = { transfert:'Transfert', filtration:'Filtration', soutirage:'Soutirage', assemblage:'Assemblage', levurage:'Levurage', produit:'Ajout produit', tirage:'Tirage / MeB', rincage:'Rinçage', desinfection:'Désinfection', detartrage:'Détartrage' };
+const COL_LABELS = { rouge:'Rouge', blanc:'Blanc', rose:'Rosé', vide:'Vide' };
+const ETAT_LABELS = { vide:'Vide', fermentation:'Fermentation', stabilise:'Stabilisé', attente:'En attente', nettoyage:'Nettoyage' };
+const COL_FILL = { rouge:'#c0392b', blanc:'#c8a84a', rose:'#b8456a', vide:'#ccc' };
+const TYPE_LABELS = { methode:'Méthode', cremant:'Crémant', petnat:'Pétnat' };
+const AN_PARAMS = [
+  {k:'tav',l:'TAV',u:'° vol'},{k:'den',l:'Densité',u:''},{k:'turb',l:'Turbidité',u:'NTU'},
+  {k:'ph',l:'pH',u:''},{k:'at',l:'AT',u:'g/L'},{k:'av',l:'AV',u:'g/L'},
+  {k:'sr',l:'Sucres rés.',u:'g/L'},{k:'glu',l:'Glucose',u:'g/L'},{k:'fru',l:'Fructose',u:'g/L'},
+  {k:'mal',l:'Ac. malique',u:'g/L'},{k:'lac',l:'Ac. lactique',u:'g/L'},{k:'so2',l:'SO₂',u:'mg/L'},
+];
+
+// ── AUTH ──
+async function doLogin() {
+  const email = document.getElementById('li-email').value.trim();
+  const pwd   = document.getElementById('li-pwd').value;
+  document.getElementById('li-err').textContent = '';
+  const { data, error } = await sb.auth.signInWithPassword({ email, password: pwd });
+  if (error) { document.getElementById('li-err').textContent = 'Email ou mot de passe incorrect'; return; }
+  await afterLogin(data.user);
+}
+
+async function afterLogin(user) {
+  me = user;
+  const { data: prof } = await sb.from('profiles').select('*').eq('id', user.id).single();
+  myRole  = prof?.role || 'employé';
+  myPrenom = prof?.prenom || user.email.split('@')[0];
+  document.getElementById('login-screen').style.display = 'none';
+  document.getElementById('main-app').style.display = 'flex';
+  document.getElementById('user-av').textContent = myPrenom[0].toUpperCase();
+  document.getElementById('user-nm').textContent = myPrenom;
+  document.getElementById('user-role').textContent = myRole === 'admin' ? 'Admin' : 'Employé';
+  // Droits selon rôle
+  const isAdmin = (myRole === 'admin');
+  ['btn-new-item','btn-new-cuve','btn-new-lot'].forEach(id => {
+    const el = document.getElementById(id);
+    if (el) el.style.display = isAdmin ? '' : 'none';
+  });
+  // Employees can signal incidents — always show in menu
+  const empBtn = document.getElementById('emp-msg-btn');
+  if (empBtn) empBtn.style.display = isAdmin ? 'none' : 'block';
+  const msgSec = document.getElementById('msg-section');
+  if (msgSec) msgSec.style.display = isAdmin ? 'block' : 'none';
+  await loadAll();
+  subscribeRT();
+  updateXPBar();
+  document.getElementById('xp-wrap').style.display = 'flex';
+}
+
+async function doLogout() { await sb.auth.signOut(); location.reload(); }
+
+// ── NAVIGATION ──
+function showPage(p, el) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(x => x.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  el.classList.add('active');
+  curPage = p;
+  document.getElementById('main-scroll').scrollTop = 0;
+  if (p === 'dash')       renderDash();
+  if (p === 'plan')       renderPlan();
+  if (p === 'cuves')      renderCuves();
+  if (p === 'analyses')   renderAnalyses();
+  if (p === 'lots')       renderLots();
+  if (p === 'histo')      renderHisto();
+  if (p === 'incidents')  renderIncidents();
+  if (p === 'inventaire') renderInventaire();
+}
+
+function fabAction() {
+  if (curPage === 'analyses')   { openSheet('new-analyse'); return; }
+  if (curPage === 'incidents')  { openSheet('new-inc'); return; }
+  if (curPage === 'inventaire' && myRole === 'admin') { openSheet('new-inv'); return; }
+  if (myRole !== 'admin') { openSheet('new-analyse'); return; }
+  openSheet('menu');
+}
+
+// ── SHEETS (clean, no ID collisions) ──
+function openSheet(name) {
+  const ov = document.getElementById('ov-' + name);
+  const sh = document.getElementById('sh-' + name);
+  if (!ov || !sh) { console.error('Sheet not found:', name); return; }
+  if (name === 'new-item') populateAssignSelect(); // async, runs in background
+  if (name === 'new-lot')  populateCuveSelect('nl-cuve-sel', null);
+  ov.classList.add('open');
+  setTimeout(() => sh.classList.add('open'), 10);
+}
+
+function populateCuveSelect(selectId, currentCuveNom) {
+  const selEl = document.getElementById(selectId);
+  if (!selEl) return;
+  selEl.innerHTML = '<option value="">— Sélectionner une cuve —</option>' +
+    db.cuves.map(c => {
+      const busy = c.designation ? ' (' + c.designation + ')' : '';
+      const isCurrent = c.nom === currentCuveNom ? ' selected' : '';
+      const etatIcon = c.etat === 'vide' ? '🟢' : c.etat === 'nettoyage' ? '🔵' : '🟡';
+      return '<option value="' + c.nom + '"' + isCurrent + '>' +
+        etatIcon + ' ' + c.nom + ' · ' + (c.volume_actuel||0) + '/' + c.capacite + ' hL' + busy +
+        '</option>';
+    }).join('');
+}
+
+function toggleTirage() {
+  const etat = document.getElementById('trf-etat')?.value;
+  const warn = document.getElementById('trf-tirage-warn');
+  const cuveRow = document.getElementById('trf-cuve-sel')?.closest('.frow');
+  if (warn) warn.style.display = etat === 'Tiré' ? '' : 'none';
+}
+
+function closeSheet(name) {
+  const ov = document.getElementById('ov-' + name);
+  const sh = document.getElementById('sh-' + name);
+  if (ov) ov.classList.remove('open');
+  if (sh) sh.classList.remove('open');
+}
+
+// ── LOAD DATA ──
+async function loadAll() {
+  const today = new Date().toISOString().slice(0,10);
+  const weekEnd = new Date(Date.now() + 7*86400000).toISOString().slice(0,10);
+  const [it, cu, an, lo, pr, ms, hi, inc, inv] = await Promise.all([
+    sb.from('planning').select('*').order('date_limite', { ascending: true, nullsFirst: false }),
+    sb.from('cuves').select('*').order('nom'),
+    sb.from('analyses').select('*').order('date', { ascending: false }),
+    sb.from('lots').select('*').order('created_at', { ascending: false }),
+    sb.from('profiles').select('*'),
+    sb.from('messages').select('*').order('created_at', { ascending: false }),
+    sb.from('historique').select('*').order('created_at', { ascending: false }).limit(100),
+    sb.from('incidents').select('*').order('created_at', { ascending: false }),
+    sb.from('inventaire').select('*').order('nom'),
+  ]);
+  db.items      = it.data  || [];
+  db.cuves      = cu.data  || [];
+  db.analyses   = an.data  || [];
+  db.lots       = lo.data  || [];
+  db.profiles   = pr.data  || [];
+  db.messages   = ms.data  || [];
+  db.historique = hi.data  || [];
+  db.incidents  = inc.data || [];
+  db.inventaire = inv.data || [];
+  // Refresh current page
+  if (curPage === 'dash')     renderDash();
+  if (curPage === 'plan')     renderPlan();
+  if (curPage === 'cuves')    renderCuves();
+  if (curPage === 'analyses') renderAnalyses();
+  if (curPage === 'lots')     renderLots();
+  updateXPBar();
+}
+
+function subscribeRT() {
+  sb.channel('rt').on('postgres_changes', { event: '*', schema: 'public' }, () => loadAll()).subscribe();
+}
+
+// ── HELPERS ──
+function fmtDate(d) { if (!d) return '—'; return d.slice(0,10).split('-').reverse().join('/'); }
+function prenom(uid) { return db.profiles.find(p => p.id === uid)?.prenom || '—'; }
+function toast(msg, dur=2500) {
+  const el = document.getElementById('toast');
+  el.textContent = msg; el.classList.add('show');
+  setTimeout(() => el.classList.remove('show'), dur);
+}
+
+// ── DASHBOARD ──
+function renderDash() {
+  const today = new Date().toISOString().slice(0,10);
+  const weekEnd = new Date(Date.now() + 7*86400000).toISOString().slice(0,10);
+  const occ = db.cuves.filter(c => c.etat !== 'vide').length;
+  const vol  = db.cuves.reduce((s,c) => s + (c.volume_actuel||0), 0);
+  const todayItems = db.items.filter(i => !i.done && i.date_limite === today);
+  const weekItems  = db.items.filter(i => !i.done && i.date_limite > today && i.date_limite <= weekEnd);
+  document.getElementById('d-occ').textContent  = occ + '/' + db.cuves.length;
+  document.getElementById('d-vol').textContent  = vol;
+  document.getElementById('d-today').textContent = todayItems.length;
+  document.getElementById('d-week').textContent  = weekItems.length;
+  // Team progress
+  const total = db.items.length;
+  const done  = db.items.filter(i => i.done).length;
+  const pct   = total > 0 ? Math.round(done/total*100) : 0;
+  setTimeout(() => document.getElementById('t-fill').style.width = pct + '%', 200);
+  document.getElementById('t-pct').textContent = pct + '%';
+  document.getElementById('t-sub').textContent = `${done} réalisées sur ${total}`;
+  // Today items
+  const todayEl = document.getElementById('d-items-today');
+  todayEl.innerHTML = todayItems.length
+    ? todayItems.sort((a,b) => prioOrder(a.priorite) - prioOrder(b.priorite)).map(i => itemCardHTML(i)).join('')
+    : '<div class="card-flat" style="text-align:center;font-size:13px;color:var(--txt3);padding:18px;">Aucune tâche prévue aujourd\'hui ✓</div>';
+  // Week items
+  const weekEl = document.getElementById('d-items-week');
+  weekEl.innerHTML = weekItems.length
+    ? weekItems.sort((a,b) => (a.date_limite||'').localeCompare(b.date_limite||'')).map(i => itemCardHTML(i)).join('')
+    : '<div style="font-size:13px;color:var(--txt3);padding:8px 0;">Aucune tâche cette semaine</div>';
+  // Render messages (admin only)
+  if (myRole === 'admin') renderMessages();
+}
+
+function prioOrder(p) { return p==='urgent'?0:p==='normal'?1:2; }
+
+// ── PLANNING ──
+function renderPlan() {
+  let list = db.items;
+  if (planFilter === 'tache')  list = list.filter(i => i.type === 'tache' && !i.done);
+  else if (planFilter === 'ot') list = list.filter(i => i.type === 'ot' && !i.done);
+  else if (planFilter === 'urgent') list = list.filter(i => i.priorite === 'urgent' && !i.done);
+  else if (planFilter === 'done') list = list.filter(i => i.done);
+  else list = list.filter(i => !i.done);
+  // Group by date
+  const days = {};
+  list.forEach(i => {
+    const k = i.date_limite || 'sans-date';
+    if (!days[k]) days[k] = [];
+    days[k].push(i);
+  });
+  const DAY_FR = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  const MONTH_FR = ['jan','fév','mar','avr','mai','jun','jul','aoû','sep','oct','nov','déc'];
+  const today = new Date().toISOString().slice(0,10);
+  let html = '';
+  Object.keys(days).sort().forEach(k => {
+    const items = days[k].sort((a,b) => prioOrder(a.priorite) - prioOrder(b.priorite));
+    let dayLabel, dayDate = '';
+    if (k === 'sans-date') { dayLabel = 'Sans date'; }
+    else {
+      const d = new Date(k + 'T12:00:00');
+      const isToday = k === today;
+      dayLabel = isToday ? 'Aujourd\'hui' : DAY_FR[d.getDay()] + ' ' + d.getDate() + ' ' + MONTH_FR[d.getMonth()];
+      dayDate = isToday ? k : '';
+    }
+    html += `<div class="plan-day">
+      <div class="plan-day-hdr">
+        <div class="plan-day-lbl ${k===today?'today':''}">${dayLabel}</div>
+        ${dayDate?'<div class="plan-day-date">'+fmtDate(dayDate)+'</div>':''}
+      </div>
+      ${items.map(i => itemCardHTML(i)).join('')}
+    </div>`;
+  });
+  document.getElementById('plan-list').innerHTML = html ||
+    '<div class="empty"><div class="empty-icon">📋</div><div class="empty-txt">Aucun élément dans cette catégorie</div></div>';
+}
+
+function filterPlan(f, el) {
+  document.querySelectorAll('#page-plan .fpill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active'); planFilter = f; renderPlan();
+}
+
+// ── ITEM CARD ──
+function itemCardHTML(i) {
+  const done = !!i.done;
+  const byWho = i.done_by ? prenom(i.done_by) : '';
+  const ASSIGN_LABELS = {
+    'tous': '👥 Toute l\'équipe',
+    'cave': '🍷 Cave',
+    'tirage': '🍾 Tirage',
+    'degorgement': '✂️ Dégorgement',
+    'depot': '📦 Dépôt'
+  };
+  const assignLabel = ASSIGN_LABELS[i.assigne_a] || (i.assigne_a ? '👤 ' + i.assigne_a : '');
+  const canCheck = !done; // everyone can check
+  return `<div class="plan-item ${done?'done':''}" style="animation-delay:.02s">
+    <div class="plan-stripe ${PRIO_STRIPE[i.priorite]||'stripe-normal'}"></div>
+    <div class="plan-body">
+      <div class="plan-top">
+        <div class="plan-prio">${PRIO[i.priorite]||'🟡'}</div>
+        <div class="plan-title ${done?'done-txt':''}">${i.titre}</div>
+        <div class="plan-type-tag ${i.type==='ot'?'tag-ot':'tag-tache'}">${i.type==='ot'?'OT Cave':'Tâche'}</div>
+      </div>
+      <div class="plan-meta">
+        ${i.date_limite?`<span>📅 ${fmtDate(i.date_limite)}</span>`:''}
+        ${assignLabel?`<span class="plan-assign">👤 ${assignLabel}</span>`:''}
+        ${i.type==='ot'&&i.cuves?`<span class="plan-cuve">⬡ ${i.cuves}</span>`:''}
+        ${i.type==='ot'&&i.operation?`<span>${OP_LABELS[i.operation]||i.operation}</span>`:''}
+      </div>
+      ${i.notes?`<div style="font-size:12px;color:var(--txt2);font-style:italic;margin-top:4px">${i.notes}</div>`:''}
+      ${i.detail?`<div style="font-size:12px;color:var(--txt3);margin-top:3px">${i.detail}</div>`:''}
+      ${done?`<div class="plan-done-badge">✓ Fait par ${byWho}${i.done_comment?' · '+i.done_comment:''}</div>`:''}
+    </div>
+    ${canCheck&&!done?`<div class="plan-check-btn" onclick="ouvrirClot('${i.id}')">○</div>`:''}
+    ${done?`<div class="plan-check-btn done-check">✓</div>`:''}
+  </div>`;
+}
+
+// ── CLÔTURE ──
+function ouvrirClot(id) {
+  const item = db.items.find(x => x.id === id);
+  if (!item) return;
+  pendingClotId = id;
+  document.getElementById('clot-info').innerHTML = `
+    <div class="clot-info-title">À clôturer</div>
+    <div class="clot-info-row"><span class="clot-prio">${PRIO[item.priorite]||'🟡'}</span><strong>${item.titre}</strong></div>
+    ${item.type==='ot'?`<div class="clot-info-row" style="margin-top:4px;color:var(--txt3)">${OP_LABELS[item.operation]||''} · ${item.cuves||''}</div>`:''}
+    ${item.notes?`<div class="clot-info-row" style="font-style:italic;margin-top:4px">${item.notes}</div>`:''}`;
+  document.getElementById('clot-comment').value = '';
+  openSheet('clot');
+}
+
+async function cloturerItem() {
+  if (!pendingClotId) return;
+  const comment = document.getElementById('clot-comment').value || null;
+  const item = db.items.find(x => x.id === pendingClotId);
+  const { error } = await sb.from('planning').update({
+    done: true, done_by: me.id,
+    done_at: new Date().toISOString(),
+    done_comment: comment,
+  }).eq('id', pendingClotId);
+  if (error) { toast('❌ ' + error.message); return; }
+  // Log historique
+  await logAction(
+    item?.type === 'ot' ? 'ot_done' : 'task_done',
+    'planning', pendingClotId,
+    { titre: item?.titre, cuve: item?.cuves, operation: item?.operation },
+    comment
+  );
+  closeSheet('clot');
+  toast('✓ Réalisé ! Bien joué 🎉');
+  launchConfetti();
+  showXPNotif(15, 'Tâche réalisée !');
+  setTimeout(() => updateXPBar(true), 400);
+  pendingClotId = null;
+}
+
+// ── SAVE ITEM (admin only) ──
+function updateItemForm() {
+  const isOT = document.getElementById('ni-type').value === 'ot';
+  document.getElementById('ni-ot-fields').style.display = isOT ? '' : 'none';
+}
+
+async function populateAssignSelect() {
+  const sel = document.getElementById('ni-assign');
+  if (!sel) return;
+  // Always reload fresh from Supabase to get latest employees
+  const { data: profiles } = await sb.from('profiles').select('id, prenom, role').order('prenom');
+  const employees = (profiles || db.profiles).map(p =>
+    `<option value="${p.prenom}">${p.prenom}${p.role === 'admin' ? ' (Admin)' : ''}</option>`
+  ).join('');
+  sel.innerHTML = `
+    <optgroup label="Groupes">
+      <option value="tous">👥 Toute l'équipe</option>
+      <option value="cave">🍷 Équipe Cave</option>
+      <option value="tirage">🍾 Équipe Tirage</option>
+      <option value="degorgement">✂️ Équipe Dégorgement</option>
+      <option value="depot">📦 Dépôt / Expédition</option>
+    </optgroup>
+    <optgroup label="Employés">
+      ${employees}
+    </optgroup>`;
+}
+
+async function saveItem() {
+  if (myRole !== 'admin') { toast('⛔ Réservé à l\'admin'); return; }
+  const titre = document.getElementById('ni-titre').value.trim();
+  if (!titre) { toast('Titre requis'); return; }
+  const type = document.getElementById('ni-type').value;
+  const { error } = await sb.from('planning').insert({
+    type,
+    titre,
+    operation:   type === 'ot' ? document.getElementById('ni-op').value : null,
+    cuves:       type === 'ot' ? document.getElementById('ni-cuves').value || null : null,
+    detail:      type === 'ot' ? document.getElementById('ni-detail').value || null : null,
+    priorite:    document.getElementById('ni-prio').value,
+    date_limite: document.getElementById('ni-date').value || null,
+    assigne_a:   document.getElementById('ni-assign').value || 'tous',
+    notes:       document.getElementById('ni-notes').value || null,
+    done:        false,
+    created_by:  me.id,
+  });
+  if (error) { toast('❌ ' + error.message); return; }
+  closeSheet('new-item');
+  // Reset form
+  ['ni-titre','ni-cuves','ni-detail','ni-notes'].forEach(id => document.getElementById(id).value = '');
+  document.getElementById('ni-date').value = '';
+  document.getElementById('ni-prio').value = 'normal';
+  toast('✓ Créé !');
+}
+
+// ── CUVES ──
+function renderCuves() {
+  let list = db.cuves;
+  if (cuveFilter === 'cuve')         list = list.filter(c => c.type === 'cuve');
+  else if (cuveFilter === 'cuvon')   list = list.filter(c => c.type === 'cuvon');
+  else if (cuveFilter === 'fermentation') list = list.filter(c => c.etat === 'fermentation');
+  else if (cuveFilter === 'vide')    list = list.filter(c => c.etat === 'vide' || c.etat === 'nettoyage');
+  const etatBadge = e => e==='fermentation'?'b-enc':e==='stabilise'?'b-ok':e==='attente'?'b-warn':e==='nettoyage'?'b-net':'b-vide';
+  document.getElementById('cuves-list').innerHTML = list.length
+    ? list.map((c,i) => {
+        const pct = c.capacite > 0 ? Math.round((c.volume_actuel||0)/c.capacite*100) : 0;
+        const tvl = TYPE_LABELS[c.type_vin] || '';
+        const filtreTag = c.filtre===true?'<span class="badge b-ok" style="font-size:10px">Filtré</span>':c.filtre===false?'<span class="badge b-warn" style="font-size:10px">Non filtré</span>':'';
+        return `<div class="cuve-card" style="animation-delay:${i*.03}s">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+            <div>
+              <div class="cuve-id">${c.nom}</div>
+              <div class="cuve-meta">${c.type==='cuve'?'Cuve':'Cuvon'} · ${c.capacite} hL</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+              <span class="badge b-${c.couleur||'vide'}">${COL_LABELS[c.couleur]||'Vide'}</span>
+              ${tvl?`<span class="badge" style="background:var(--wine-dim);color:var(--wine);font-size:10px">${tvl}</span>`:''}
+              <span class="badge ${etatBadge(c.etat)}">${ETAT_LABELS[c.etat]||'—'}</span>
+              ${filtreTag}
+            </div>
+          </div>
+          <div class="fill-track"><div class="fill-bar" style="width:${pct}%;background:${COL_FILL[c.couleur]||'#ccc'}"></div></div>
+          <div class="fill-meta"><span>${c.volume_actuel||0} hL</span><span>${pct}%</span></div>
+          ${c.designation?`<div class="cuve-lot">📋 ${c.designation}</div>`:''}
+          ${(()=>{const l=db.lots.find(x=>x.cuves_associees===c.nom&&x.etat!=='Tiré');return l?`<div style="font-size:11px;color:var(--blue);margin-top:3px;font-weight:500">◈ Lot : ${l.designation} · ${l.volume||0} hL</div>`:''})()}
+          ${(()=>{ const l=db.lots.find(x=>x.id===c.lot_id); return l?`<div style="font-size:11px;color:var(--blue);margin-top:3px">◈ ${l.designation} · ${l.volume||0} hL</div>`:''; })()}
+          <div class="cuve-btn" onclick="ouvrirModCuve('${c.id}')">✏️ Modifier le contenu</div>
+          ${myRole==='admin'?`<div class="cuve-btn del" onclick="supprimerCuve('${c.id}','${c.nom}')">🗑 Supprimer</div>`:''}
+        </div>`;
+      }).join('')
+    : '<div class="empty"><div class="empty-icon">⬡</div><div class="empty-txt">Aucune cuve</div></div>';
+}
+
+function filterCuves(f, el) {
+  document.querySelectorAll('#page-cuves .fpill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active'); cuveFilter = f; renderCuves();
+}
+
+async function saveCuve() {
+  if (myRole !== 'admin') { toast('⛔ Réservé à l\'admin'); return; }
+  const nom = document.getElementById('nc-nom').value.trim();
+  if (!nom) { toast('Nom requis'); return; }
+  const fv = document.getElementById('nc-filtre').value;
+  const { error } = await sb.from('cuves').insert({
+    nom, type: document.getElementById('nc-type').value,
+    capacite: +document.getElementById('nc-cap').value||0,
+    volume_actuel: +document.getElementById('nc-vol').value||0,
+    type_vin: document.getElementById('nc-typevin').value||null,
+    couleur: document.getElementById('nc-col').value,
+    etat: document.getElementById('nc-etat').value,
+    filtre: fv==='true'?true:fv==='false'?false:null,
+    designation: document.getElementById('nc-desig').value||null,
+  });
+  if (error) { toast('❌ ' + error.message); return; }
+  closeSheet('new-cuve');
+  toast('✓ Contenant ajouté');
+}
+
+function ouvrirModCuve(id) {
+  const c = db.cuves.find(x => x.id === id);
+  if (!c) return;
+  pendingModCuveId = id;
+  document.getElementById('mc-title').textContent = 'Modifier — ' + c.nom;
+  document.getElementById('mc-info').innerHTML = `<strong>${c.nom}</strong> · ${c.type==='cuve'?'Cuve':'Cuvon'} · ${c.capacite} hL`;
+  document.getElementById('mc-vol').value    = c.volume_actuel || '';
+  document.getElementById('mc-etat').value   = c.etat || 'vide';
+  document.getElementById('mc-typevin').value = c.type_vin || '';
+  document.getElementById('mc-col').value    = c.couleur || 'vide';
+  document.getElementById('mc-filtre').value  = c.filtre===true?'true':c.filtre===false?'false':'';
+  document.getElementById('mc-desig').value   = c.designation || '';
+  openSheet('mod-cuve');
+}
+
+async function saveModCuve() {
+  if (!pendingModCuveId) return;
+  const fv = document.getElementById('mc-filtre').value;
+  const { error } = await sb.from('cuves').update({
+    volume_actuel: +document.getElementById('mc-vol').value||0,
+    etat:         document.getElementById('mc-etat').value,
+    type_vin:     document.getElementById('mc-typevin').value||null,
+    couleur:      document.getElementById('mc-col').value,
+    filtre:       fv==='true'?true:fv==='false'?false:null,
+    designation:  document.getElementById('mc-desig').value||null,
+  }).eq('id', pendingModCuveId);
+  if (error) { toast('❌ ' + error.message); return; }
+  closeSheet('mod-cuve');
+  toast('✓ Cuve mise à jour');
+  pendingModCuveId = null;
+}
+
+async function supprimerCuve(id, nom) {
+  if (myRole !== 'admin') return;
+  if (!confirm(`Supprimer "${nom}" définitivement ?`)) return;
+  const { error } = await sb.from('cuves').delete().eq('id', id);
+  if (error) { toast('❌ ' + error.message); return; }
+  toast('🗑 Cuve supprimée');
+}
+
+// ── ANALYSES ──
+function renderAnalyses() {
+  document.getElementById('analyses-list').innerHTML = db.analyses.length
+    ? db.analyses.map((a,i) => `
+        <div class="an-card" style="animation-delay:${i*.04}s">
+          <div class="an-head">
+            <div class="an-cuve">${a.cuve_id}</div>
+            <div class="an-date">${fmtDate(a.date)}</div>
+          </div>
+          <div class="an-grid">
+            ${AN_PARAMS.filter(p => a[p.k]!=null).map(p => `
+              <div class="an-p">
+                <div class="an-pn">${p.l}</div>
+                <div class="an-pv">${a[p.k]}<span class="an-pu"> ${p.u}</span></div>
+              </div>`).join('')}
+          </div>
+          ${a.observations?`<div class="an-obs">${a.observations}</div>`:''}
+        </div>`).join('')
+    : '<div class="empty"><div class="empty-icon">⚗</div><div class="empty-txt">Aucune analyse</div></div>';
+}
+
+async function saveAnalyse() {
+  const cuve = document.getElementById('fa-cuve').value.trim();
+  if (!cuve) { toast('Cuve requise'); return; }
+  const row = { cuve_id: cuve, date: document.getElementById('fa-date').value || new Date().toISOString().slice(0,10), created_by: me.id };
+  ['tav','den','turb','ph','at','av','sr','glu','fru','mal','lac','so2'].forEach(k => {
+    const v = document.getElementById('fa-'+k).value;
+    row[k] = v !== '' ? +v : null;
+  });
+  row.observations = document.getElementById('fa-obs').value || null;
+  const { error } = await sb.from('analyses').insert(row);
+  if (error) { toast('❌ ' + error.message); return; }
+  closeSheet('new-analyse');
+  toast('✓ Analyse enregistrée');
+}
+
+// ── LOTS ──
+function filterLots(f, el) {
+  document.querySelectorAll('#page-lots .fpill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active'); lotFilter = f; renderLots();
+}
+
+function renderLots() {
+  let list = db.lots;
+  if (lotFilter !== 'all') list = list.filter(l => l.type_lot === lotFilter);
+  document.getElementById('lots-list').innerHTML = list.length
+    ? list.map((l,i) => {
+        const cuves = (l.cuves_associees||'').split(',').map(s=>s.trim()).filter(Boolean);
+        return `<div class="lot-card" style="animation-delay:${i*.04}s">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div>
+              <div class="lot-name">${l.designation}</div>
+              <div class="lot-ref">${l.reference||'—'} · ${TYPE_LABELS[l.type_lot]||l.type_lot||'—'}</div>
+            </div>
+            <div style="display:flex;flex-direction:column;align-items:flex-end;gap:5px">
+              <span class="badge b-${l.couleur||'vide'}">${COL_LABELS[l.couleur]||'—'}</span>
+              <span class="badge b-ok" style="font-size:10px">${l.etat||'En cours'}</span>
+            </div>
+          </div>
+          ${cuves.length?`<div class="lot-cuves">${cuves.map(c=>`<span class="lot-chip">⬡ ${c}</span>`).join('')}</div>`:''}
+          <div class="lot-meta">
+            <span>Volume : <strong style="color:var(--txt2)">${l.volume||0} hL</strong></span>
+            ${l.cuves_associees?`<span>Cuve : <strong style="color:var(--wine)">⬡ ${l.cuves_associees}</strong></span>`:'<span style="color:var(--danger);font-size:11px">⚠ Aucune cuve liée</span>'}
+            ${l.date_tirage?`<span>Tirage : <strong style="color:var(--txt2)">${fmtDate(l.date_tirage)}</strong></span>`:''}
+          </div>
+          <div class="lot-actions">
+            <div class="lot-btn primary" onclick="ouvrirTrfLot('${l.id}')">✏️ Modifier</div>
+            ${myRole==='admin'?`<div class="lot-btn del" onclick="supprimerLot('${l.id}','${l.designation.replace(/'/g,"\\'")}')">🗑 Supprimer</div>`:''}
+          </div>
+        </div>`;
+      }).join('')
+    : '<div class="empty"><div class="empty-icon">◈</div><div class="empty-txt">Aucun lot</div></div>';
+}
+
+async function saveLot() {
+  if (myRole !== 'admin') { toast('⛔ Réservé à l\'admin'); return; }
+  const desig = document.getElementById('nl-desig').value.trim();
+  if (!desig) { toast('Désignation requise'); return; }
+  const cuveNom = document.getElementById('nl-cuve-sel').value;
+  const vol = +document.getElementById('nl-vol').value||0;
+  const couleur = document.getElementById('nl-col').value;
+  const typeVin = document.getElementById('nl-type').value;
+
+  // 1. Create lot
+  const { data: newLot, error } = await sb.from('lots').insert({
+    reference:       document.getElementById('nl-ref').value||null,
+    designation:     desig,
+    type_lot:        typeVin,
+    couleur:         couleur,
+    volume:          vol,
+    date_tirage:     document.getElementById('nl-tirage').value||null,
+    cuves_associees: cuveNom||null,
+    etat:            'En cours',
+  }).select().single();
+  if (error) { toast('❌ ' + error.message); return; }
+
+  // 2. If a cuve was selected, update it to reflect this lot
+  if (cuveNom) {
+    const cuve = db.cuves.find(c => c.nom === cuveNom);
+    if (cuve) {
+      await sb.from('cuves').update({
+        designation:   desig,
+        couleur:       couleur,
+        type_vin:      typeVin,
+        volume_actuel: vol || cuve.volume_actuel,
+        etat:          vol > 0 ? 'attente' : cuve.etat,
+        lot_id:        newLot?.id || null,
+      }).eq('id', cuve.id);
+    }
+  }
+
+  closeSheet('new-lot');
+  // Reset
+  ['nl-ref','nl-desig','nl-vol'].forEach(id => document.getElementById(id).value='');
+  document.getElementById('nl-cuve-sel').value='';
+  document.getElementById('nl-tirage').value='';
+  toast('✓ Lot créé' + (cuveNom ? ' et lié à ' + cuveNom : ''));
+}
+
+function ouvrirTrfLot(id) {
+  const l = db.lots.find(x => x.id === id);
+  if (!l) return;
+  pendingTrfLotId = id;
+  const steps = getWorkflow(l.type_lot);
+  const curStep = steps.find(s => s.id === (l.statut_process||'reception'));
+  document.getElementById('trf-info').innerHTML =
+    `<strong>${l.designation}</strong> · ${TYPE_LABELS[l.type_lot]||''} · ${l.volume||0} hL` +
+    (curStep ? `<br>Étape actuelle : <strong>${curStep.icon} ${curStep.label}</strong>` : '') +
+    (l.cuves_associees ? `<br>Cuve : <strong>${l.cuves_associees}</strong>` : '');
+  document.getElementById('trf-vol').value        = l.volume || '';
+  document.getElementById('trf-etat').value       = l.etat || 'En cours';
+  document.getElementById('trf-tirage').value     = l.date_tirage || '';
+  document.getElementById('trf-btl').value        = l.nb_bouteilles || '';
+  document.getElementById('trf-liqueur').value    = l.liqueur_dosage || '';
+  document.getElementById('trf-levain').value     = l.levain_cuve || '';
+  document.getElementById('trf-levures').value    = l.levures_dose || '';
+  document.getElementById('trf-bentonite').value  = l.bentonite_dose || '';
+  document.getElementById('trf-elevage').value    = l.duree_elevage_mois || '';
+  document.getElementById('trf-pression').value   = l.pression_objectif || '';
+  document.getElementById('trf-emplacement').value= l.emplacement || '';
+  document.getElementById('deg-date').value       = l.date_degorgement || '';
+  document.getElementById('deg-cols').value       = l.nb_degorge || '';
+  document.getElementById('deg-perte').value      = l.perte_cols || '';
+  document.getElementById('deg-dosage').value     = l.dosage_expedition || '';
+  document.getElementById('deg-bouchage').value   = l.bouchage || '';
+  document.getElementById('deg-habillage').value  = l.lot_habillage || '';
+  document.getElementById('deg2-bulle').value     = l.deg_bulle || '';
+  document.getElementById('deg2-aspect').value    = l.deg_aspect || '';
+  document.getElementById('deg2-nez').value       = l.deg_nez || '';
+  document.getElementById('deg2-bouche').value    = l.deg_bouche || '';
+  document.getElementById('deg2-decision').value  = l.deg_decision || '';
+  document.getElementById('deg2-comment').value   = l.deg_comment || '';
+  populateCuveSelect('trf-cuve-sel', l.cuves_associees);
+  const warn = document.getElementById('trf-tirage-warn');
+  if (warn) warn.style.display = 'none';
+  openSheet('trf-lot');
+}
+
+async function saveTrfLot() {
+  if (!pendingTrfLotId) return;
+  const lot = db.lots.find(x => x.id === pendingTrfLotId);
+  const newEtat    = document.getElementById('trf-etat').value;
+  const newCuveNom = document.getElementById('trf-cuve-sel').value;
+  const newVol     = +document.getElementById('trf-vol').value || lot?.volume || 0;
+  const oldCuveNom = lot?.cuves_associees;
+  const isTirage   = newEtat === 'Tiré';
+
+  // 1. Update the lot
+  const { error } = await sb.from('lots').update({
+    volume:             newVol,
+    etat:               newEtat,
+    cuves_associees:    isTirage ? null : (newCuveNom || oldCuveNom || null),
+    date_tirage:        document.getElementById('trf-tirage').value||null,
+    nb_bouteilles:      +document.getElementById('trf-btl').value||null,
+    liqueur_dosage:     +document.getElementById('trf-liqueur').value||null,
+    levain_cuve:        document.getElementById('trf-levain').value||null,
+    levures_dose:       +document.getElementById('trf-levures').value||null,
+    bentonite_dose:     +document.getElementById('trf-bentonite').value||null,
+    duree_elevage_mois: +document.getElementById('trf-elevage').value||null,
+    pression_objectif:  +document.getElementById('trf-pression').value||null,
+    emplacement:        document.getElementById('trf-emplacement').value||null,
+    date_degorgement:   document.getElementById('deg-date').value||null,
+    nb_degorge:         +document.getElementById('deg-cols').value||null,
+    perte_cols:         +document.getElementById('deg-perte').value||null,
+    dosage_expedition:  +document.getElementById('deg-dosage').value||null,
+    bouchage:           document.getElementById('deg-bouchage').value||null,
+    lot_habillage:      document.getElementById('deg-habillage').value||null,
+    deg_bulle:          document.getElementById('deg2-bulle').value||null,
+    deg_aspect:         document.getElementById('deg2-aspect').value||null,
+    deg_nez:            document.getElementById('deg2-nez').value||null,
+    deg_bouche:         document.getElementById('deg2-bouche').value||null,
+    deg_decision:       document.getElementById('deg2-decision').value||null,
+    deg_comment:        document.getElementById('deg2-comment').value||null,
+  }).eq('id', pendingTrfLotId);
+  if (error) { toast('❌ ' + error.message); return; }
+
+  // 2. If cuve changed: empty the old cuve, fill the new one
+  if (!isTirage && newCuveNom && newCuveNom !== oldCuveNom) {
+    // Empty old cuve
+    if (oldCuveNom) {
+      const oldCuve = db.cuves.find(c => c.nom === oldCuveNom);
+      if (oldCuve) {
+        await sb.from('cuves').update({
+          volume_actuel: 0, etat: 'vide', designation: null,
+          couleur: 'vide', type_vin: null, lot_id: null,
+        }).eq('id', oldCuve.id);
+      }
+    }
+    // Fill new cuve with lot info
+    const newCuve = db.cuves.find(c => c.nom === newCuveNom);
+    if (newCuve) {
+      await sb.from('cuves').update({
+        volume_actuel: newVol,
+        etat:          'attente',
+        designation:   lot?.designation || null,
+        couleur:       lot?.couleur || 'vide',
+        type_vin:      lot?.type_lot || null,
+        lot_id:        pendingTrfLotId,
+      }).eq('id', newCuve.id);
+    }
+  }
+
+  // 3. If tirage: vide la cuve source
+  if (isTirage && oldCuveNom) {
+    const oldCuve = db.cuves.find(c => c.nom === oldCuveNom);
+    if (oldCuve) {
+      await sb.from('cuves').update({
+        volume_actuel: 0, etat: 'vide', designation: null,
+        couleur: 'vide', type_vin: null, lot_id: null,
+      }).eq('id', oldCuve.id);
+    }
+  }
+
+  // 4. Also update current cuve volume if same cuve
+  if (!isTirage && newCuveNom === oldCuveNom && newCuveNom) {
+    const cuve = db.cuves.find(c => c.nom === newCuveNom);
+    if (cuve) {
+      await sb.from('cuves').update({ volume_actuel: newVol }).eq('id', cuve.id);
+    }
+  }
+
+  closeSheet('trf-lot');
+  const msg = isTirage
+    ? '🍾 Lot tiré ! Cuve vidée automatiquement'
+    : newCuveNom !== oldCuveNom && newCuveNom
+      ? `✓ Lot transféré vers ${newCuveNom}`
+      : '✓ Lot mis à jour';
+  toast(msg);
+  pendingTrfLotId = null;
+}
+
+async function supprimerLot(id, nom) {
+  if (myRole !== 'admin') return;
+  if (!confirm(`Supprimer le lot "${nom}" ?`)) return;
+  // 1. Vider toutes les cuves liées à ce lot (lot_id ou cuves_associees)
+  const lot = db.lots.find(x => x.id === id);
+  // Vider via lot_id
+  await sb.from('cuves').update({
+    lot_id: null, designation: null,
+    couleur: 'vide', type_vin: null,
+    volume_actuel: 0, etat: 'vide'
+  }).eq('lot_id', id);
+  // Vider via cuves_associees si lot lié par nom
+  if (lot?.cuves_associees) {
+    const noms = lot.cuves_associees.split(',').map(s=>s.trim()).filter(Boolean);
+    for (const nom_cuve of noms) {
+      const cuve = db.cuves.find(c => c.nom === nom_cuve);
+      if (cuve) {
+        await sb.from('cuves').update({
+          lot_id: null, designation: null,
+          couleur: 'vide', type_vin: null,
+          volume_actuel: 0, etat: 'vide'
+        }).eq('id', cuve.id);
+      }
+    }
+  }
+  // 2. Supprimer le lot
+  const { error } = await sb.from('lots').delete().eq('id', id);
+  if (error) { toast('❌ ' + error.message); return; }
+  toast('🗑 Lot supprimé, cuve(s) vidée(s)');
+}
+
+
+// ── MESSAGES ──
+const MSG_PRIO = { urgent:'🔴', normal:'🟡', info:'🔵' };
+const MSG_CAT  = { commande:'📦 Commander', maintenance:'🔧 Maintenance', probleme:'⚠️ Problème', info:'💬 Info', autre:'Autre' };
+
+function renderMessages() {
+  const msgs = db.messages || [];
+  const nonLus = msgs.filter(m => !m.lu);
+  // Update badge
+  const badge = document.getElementById('msg-count-badge');
+  const navBadge = document.getElementById('nav-msg-badge');
+  if (badge) {
+    if (nonLus.length > 0) {
+      badge.textContent = nonLus.length;
+      badge.style.display = 'inline';
+    } else {
+      badge.style.display = 'none';
+    }
+  }
+  if (navBadge) {
+    if (nonLus.length > 0) {
+      navBadge.textContent = nonLus.length;
+      navBadge.style.display = 'flex';
+    } else {
+      navBadge.style.display = 'none';
+    }
+  }
+  const el = document.getElementById('msg-list');
+  if (!el) return;
+  if (msgs.length === 0) {
+    el.innerHTML = '<div style="font-size:13px;color:var(--txt3);padding:8px 0;">Aucun message pour le moment</div>';
+    return;
+  }
+  el.innerHTML = msgs.map(m => {
+    const sender = db.profiles.find(p => p.id === m.created_by)?.prenom || '—';
+    const timeAgo = fmtTimeAgo(m.created_at);
+    const statusTag = m.traite
+      ? '<span style="font-size:11px;color:var(--ok);font-weight:600">✅ Traité</span>'
+      : m.lu
+        ? '<span style="font-size:11px;color:var(--txt3)">👁 Lu</span>'
+        : '<span style="font-size:11px;color:var(--danger);font-weight:600">🔴 Nouveau</span>';
+    const actions = m.traite ? '' : `
+      <div style="display:flex;gap:6px;margin-top:8px;flex-wrap:wrap">
+        ${!m.lu ? `<div class="msg-lu-btn" onclick="marquerLu('${m.id}',false)">👁 Marquer lu</div>` : ''}
+        <div class="msg-lu-btn" style="background:var(--ok-l);border-color:rgba(42,122,32,0.2);color:var(--ok)" onclick="marquerLu('${m.id}',true)">✅ Marquer traité</div>
+      </div>`;
+    return `<div class="msg-card ${m.priorite||'normal'} ${m.traite?'lu':''}">
+      <div class="msg-prio">${MSG_PRIO[m.priorite]||'🟡'}</div>
+      <div class="msg-body">
+        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:3px">
+          <div class="msg-from">${sender} · ${MSG_CAT[m.categorie]||m.categorie||''}</div>
+          ${statusTag}
+        </div>
+        <div class="msg-text">${m.texte}</div>
+        <div class="msg-time">${timeAgo}</div>
+        ${actions}
+      </div>
+    </div>`;
+  }).join('');
+}
+
+function fmtTimeAgo(iso) {
+  if (!iso) return '';
+  const diff = (Date.now() - new Date(iso)) / 1000;
+  if (diff < 60)   return "à l'instant";
+  if (diff < 3600) return Math.floor(diff/60) + ' min';
+  if (diff < 86400) return Math.floor(diff/3600) + 'h';
+  return fmtDate(iso.slice(0,10));
+}
+
+async function sendMsg() {
+  const texte = document.getElementById('nm-text').value.trim();
+  if (!texte) { toast('Écrivez votre message'); return; }
+  const { error } = await sb.from('messages').insert({
+    priorite:   document.getElementById('nm-prio').value,
+    categorie:  document.getElementById('nm-cat').value,
+    texte,
+    lu:         false,
+    created_by: me.id,
+  });
+  if (error) { toast('❌ ' + error.message); return; }
+  closeSheet('new-msg');
+  document.getElementById('nm-text').value = '';
+  toast('✉️ Message envoyé !');
+}
+
+async function marquerLu(id, traite=false) {
+  const update = traite ? { lu: true, traite: true } : { lu: true };
+  const { error } = await sb.from('messages').update(update).eq('id', id);
+  if (error) { toast('❌ ' + error.message); return; }
+  toast(traite ? '✅ Message traité !' : '👁 Message marqué comme lu');
+}
+
+
+// ════════════════════════════════════════════
+// TRAÇABILITÉ — HISTORIQUE
+// ════════════════════════════════════════════
+const ACTION_LABELS = {
+  task_done:   '✅ Tâche réalisée',
+  ot_done:     '⬡ OT clôturé',
+  inc_created: '🔧 Incident signalé',
+  inc_resolu:  '✅ Incident résolu',
+  cuve_modif:  '✏️ Cuve modifiée',
+  lot_created: '◈ Lot créé',
+  lot_deleted: '🗑 Lot supprimé',
+  analyse:     '⚗ Analyse saisie',
+};
+
+async function logAction(type, cible_type, cible_id, details, commentaire) {
+  try {
+    await sb.from('historique').insert({
+      user_id:     me.id,
+      action_type: type,
+      cible_type,
+      cible_id:    cible_id || null,
+      details:     details || null,
+      commentaire: commentaire || null,
+    });
+  } catch(e) { console.warn('Historique non enregistré:', e); }
+}
+
+function renderHisto() {
+  let list = db.historique;
+  if (histoFilter === 'tache')    list = list.filter(h => h.action_type === 'task_done');
+  else if (histoFilter === 'ot')  list = list.filter(h => h.action_type === 'ot_done');
+  else if (histoFilter === 'incident') list = list.filter(h => h.action_type.startsWith('inc'));
+  const el = document.getElementById('histo-list');
+  if (!el) return;
+  el.innerHTML = list.length ? list.map(h => {
+    const who = db.profiles.find(p => p.id === h.user_id)?.prenom || '—';
+    const det = h.details || {};
+    const label = ACTION_LABELS[h.action_type] || h.action_type;
+    const detail = det.cuve ? ` · ${det.cuve}` : det.titre ? ` · ${det.titre}` : '';
+    return `<div class="histo-item">
+      <div class="histo-av">${who[0]?.toUpperCase()||'?'}</div>
+      <div class="histo-body">
+        <div class="histo-action">${label}${detail}</div>
+        <div class="histo-meta">${who} · ${fmtTimeAgo(h.created_at)}</div>
+        ${h.commentaire ? `<div class="histo-comment">"${h.commentaire}"</div>` : ''}
+      </div>
+    </div>`;
+  }).join('')
+  : '<div class="empty"><div class="empty-icon">📜</div><div class="empty-txt">Aucune action enregistrée</div></div>';
+}
+
+function filterHisto(f, el) {
+  document.querySelectorAll('#page-histo .fpill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active'); histoFilter = f; renderHisto();
+}
+
+// ════════════════════════════════════════════
+// INCIDENTS / MAINTENANCE
+// ════════════════════════════════════════════
+function renderIncidents() {
+  let list = db.incidents;
+  if (incFilter !== 'all') list = list.filter(i => i.statut === incFilter);
+  // Badge dans nav
+  const open = db.incidents.filter(i => i.statut === 'ouvert').length;
+  const icon = document.getElementById('inc-nav-icon');
+  if (icon) icon.textContent = open > 0 ? `🔴` : '🔧';
+  const el = document.getElementById('inc-list');
+  if (!el) return;
+  el.innerHTML = list.length ? list.map(i => {
+    const who = db.profiles.find(p => p.id === i.created_by)?.prenom || '—';
+    const statutLabel = i.statut === 'ouvert' ? '🔴 Ouvert' : i.statut === 'en_cours' ? '🟡 En cours' : '✅ Résolu';
+    const isAdmin = myRole === 'admin';
+    return `<div class="inc-card ${i.priorite||'normal'}">
+      <div class="inc-header">
+        <div class="inc-titre">${PRIO[i.priorite]||'🟡'} ${i.titre}</div>
+        <span class="inc-statut inc-${i.statut}">${statutLabel}</span>
+      </div>
+      ${i.description ? `<div class="inc-desc">${i.description}</div>` : ''}
+      <div class="inc-meta">
+        ${i.cuve_id ? `⬡ ${i.cuve_id} · ` : ''}
+        Signalé par ${who} · ${fmtTimeAgo(i.created_at)}
+      </div>
+      ${i.statut !== 'resolu' && isAdmin ? `
+        <div class="inc-actions">
+          ${i.statut === 'ouvert' ? `<div class="inc-btn primary" onclick="majIncident('${i.id}','en_cours')">🟡 Prendre en charge</div>` : ''}
+          <div class="inc-btn success" onclick="majIncident('${i.id}','resolu')">✅ Marquer résolu</div>
+        </div>` : ''}
+    </div>`;
+  }).join('')
+  : '<div class="empty"><div class="empty-icon">🔧</div><div class="empty-txt">Aucun incident</div></div>';
+}
+
+function filterInc(f, el) {
+  document.querySelectorAll('#page-incidents .fpill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active'); incFilter = f; renderIncidents();
+}
+
+async function saveIncident() {
+  const titre = document.getElementById('ni2-titre').value.trim();
+  if (!titre) { toast('Titre requis'); return; }
+  const { data, error } = await sb.from('incidents').insert({
+    titre,
+    priorite:    document.getElementById('ni2-prio').value,
+    cuve_id:     document.getElementById('ni2-cuve').value || null,
+    description: document.getElementById('ni2-desc').value || null,
+    created_by:  me.id,
+    statut:      'ouvert',
+  }).select().single();
+  if (error) { toast('❌ ' + error.message); return; }
+  await logAction('inc_created', 'incident', data?.id, { titre, cuve: document.getElementById('ni2-cuve').value || null });
+  closeSheet('new-inc');
+  ['ni2-titre','ni2-cuve','ni2-desc'].forEach(id => document.getElementById(id).value = '');
+  toast('🔧 Incident signalé');
+}
+
+async function majIncident(id, statut) {
+  const upd = { statut };
+  if (statut === 'resolu') { upd.resolu_by = me.id; upd.resolu_at = new Date().toISOString(); }
+  const { error } = await sb.from('incidents').update(upd).eq('id', id);
+  if (error) { toast('❌ ' + error.message); return; }
+  if (statut === 'resolu') {
+    const inc = db.incidents.find(x => x.id === id);
+    await logAction('inc_resolu', 'incident', id, { titre: inc?.titre });
+  }
+  toast(statut === 'resolu' ? '✅ Incident résolu' : '🟡 Pris en charge');
+}
+
+// ════════════════════════════════════════════
+// INVENTAIRE
+// ════════════════════════════════════════════
+const INV_CAT_ICON = { oenologique:'🧪', conditionnement:'📦', materiel:'🔧' };
+
+function renderInventaire() {
+  let list = db.inventaire;
+  if (invFilter !== 'all') list = list.filter(i => i.categorie === invFilter);
+  const el = document.getElementById('inv-list');
+  if (!el) return;
+  // Alert stock bas en haut
+  const alertes = list.filter(i => i.seuil_alerte && i.quantite <= i.seuil_alerte);
+  if (alertes.length > 0) {
+    el.innerHTML = `<div style="background:var(--danger-l);border:1px solid rgba(192,32,16,0.2);border-radius:var(--r);padding:12px 15px;margin-bottom:12px;font-size:13px;color:var(--danger);font-weight:500">
+      ⚠️ ${alertes.length} produit${alertes.length>1?'s':''} en stock bas : ${alertes.map(a=>a.nom).join(', ')}
+    </div>`;
+  } else { el.innerHTML = ''; }
+
+  el.innerHTML += list.length ? list.map(i => {
+    const isAlerte = i.seuil_alerte && i.quantite <= i.seuil_alerte;
+    const pct = i.seuil_alerte ? Math.min(100, Math.round(i.quantite / (i.seuil_alerte * 3) * 100)) : 50;
+    const barClass = pct < 25 ? 'danger' : pct < 50 ? 'warn' : '';
+    return `<div class="inv-card ${isAlerte?'alerte':''}">
+      <div class="inv-icon">${INV_CAT_ICON[i.categorie]||'📦'}</div>
+      <div class="inv-body">
+        <div class="inv-nom">${i.nom}</div>
+        <div class="inv-cat">${i.categorie||'—'}</div>
+        ${i.seuil_alerte ? `<div class="inv-bar"><div class="inv-bar-fill ${barClass}" style="width:${pct}%"></div></div>` : ''}
+      </div>
+      <div class="inv-right">
+        <div class="inv-qty">${i.quantite||0}</div>
+        <div class="inv-unite">${i.unite||''}</div>
+        ${isAlerte ? `<div class="inv-alerte">⚠ Bas</div>` : ''}
+      </div>
+      ${myRole==='admin' ? `<div style="margin-left:8px"><div class="inc-btn primary" onclick="ouvrirModInv('${i.id}')">✏️</div></div>` : ''}
+    </div>`;
+  }).join('')
+  : '<div class="empty"><div class="empty-icon">📦</div><div class="empty-txt">Aucun produit en stock</div></div>';
+}
+
+function filterInv(f, el) {
+  document.querySelectorAll('#page-inventaire .fpill').forEach(p => p.classList.remove('active'));
+  el.classList.add('active'); invFilter = f; renderInventaire();
+}
+
+async function saveInventaire() {
+  if (myRole !== 'admin') { toast('⛔ Réservé à l\'admin'); return; }
+  const nom = document.getElementById('nv-nom').value.trim();
+  if (!nom) { toast('Nom requis'); return; }
+  const { error } = await sb.from('inventaire').insert({
+    nom,
+    categorie:    document.getElementById('nv-cat').value,
+    unite:        document.getElementById('nv-unite').value,
+    quantite:     +document.getElementById('nv-qty').value || 0,
+    seuil_alerte: +document.getElementById('nv-seuil').value || null,
+  });
+  if (error) { toast('❌ ' + error.message); return; }
+  closeSheet('new-inv');
+  ['nv-nom','nv-qty','nv-seuil'].forEach(id => document.getElementById(id).value = '');
+  toast('✓ Produit ajouté');
+}
+
+function ouvrirModInv(id) {
+  const inv = db.inventaire.find(x => x.id === id);
+  if (!inv) return;
+  pendingModInvId = id;
+  document.getElementById('mod-inv-title').textContent = inv.nom;
+  document.getElementById('mod-inv-info').textContent = `Stock actuel : ${inv.quantite} ${inv.unite}`;
+  document.getElementById('mi-qty').value   = inv.quantite || '';
+  document.getElementById('mi-seuil').value = inv.seuil_alerte || '';
+  document.getElementById('mi-mouv').value  = 'set';
+  openSheet('mod-inv');
+}
+
+async function saveModInv() {
+  if (!pendingModInvId) return;
+  const inv = db.inventaire.find(x => x.id === pendingModInvId);
+  const mouv = document.getElementById('mi-mouv').value;
+  const val  = +document.getElementById('mi-qty').value || 0;
+  let newQty = val;
+  if (mouv === 'add') newQty = (inv?.quantite || 0) + val;
+  if (mouv === 'sub') newQty = Math.max(0, (inv?.quantite || 0) - val);
+  const { error } = await sb.from('inventaire').update({
+    quantite:     newQty,
+    seuil_alerte: +document.getElementById('mi-seuil').value || null,
+  }).eq('id', pendingModInvId);
+  if (error) { toast('❌ ' + error.message); return; }
+  closeSheet('mod-inv');
+  toast('✓ Stock mis à jour');
+  pendingModInvId = null;
+}
+
+// ════════════════════════════════════════════
+// COURBES FERMENTATION — Chart.js dans les analyses
+// ════════════════════════════════════════════
+function renderAnalyseCourbes(cuveNom) {
+  const data = db.analyses
+    .filter(a => a.cuve_id === cuveNom && (a.den || a.ph))
+    .sort((a,b) => a.date.localeCompare(b.date))
+    .slice(-14); // 14 derniers jours
+  if (data.length < 2) return '';
+  const labels = data.map(a => fmtDate(a.date));
+  const densites = data.map(a => a.den);
+  const phs = data.map(a => a.ph);
+  const canvasId = 'chart-' + cuveNom.replace(/[^a-z0-9]/gi,'');
+  setTimeout(() => {
+    const canvas = document.getElementById(canvasId);
+    if (!canvas || !window.Chart) return;
+    new window.Chart(canvas, {
+      type: 'line',
+      data: {
+        labels,
+        datasets: [
+          densites.some(v=>v) ? { label:'Densité', data:densites, borderColor:'#7a1a2e', backgroundColor:'rgba(122,26,46,0.08)', tension:.3, pointRadius:3 } : null,
+          phs.some(v=>v)      ? { label:'pH',      data:phs,      borderColor:'#1a5a9a', backgroundColor:'rgba(26,90,154,0.08)',  tension:.3, pointRadius:3, yAxisID:'ph' } : null,
+        ].filter(Boolean)
+      },
+      options: {
+        responsive:true, maintainAspectRatio:false,
+        plugins:{ legend:{ labels:{ font:{ size:11 }, boxWidth:12 } } },
+        scales: {
+          y:   { position:'left',  title:{ display:true, text:'Densité', font:{size:10} } },
+          ph:  { position:'right', title:{ display:true, text:'pH',      font:{size:10} }, grid:{ drawOnChartArea:false } }
+        }
+      }
+    });
+  }, 100);
+  return `<div class="cuve-chart-section">
+    <div style="font-size:11px;font-weight:600;color:var(--wine);margin-bottom:6px">📈 Évolution (14j)</div>
+    <div style="position:relative;height:160px"><canvas id="${canvasId}" class="chart-canvas"></canvas></div>
+  </div>`;
+}
+
+
+// ════════════════════════════════════════════
+// WORKFLOW CRÉMANT / MÉTHODE / PÉTNAT
+// ════════════════════════════════════════════
+
+const WORKFLOW_METHODE = [
+  { id:'reception',        label:'Réception',      icon:'📥' },
+  { id:'analyse',          label:'Analyse',        icon:'⚗' },
+  { id:'filtration',       label:'Filtration',     icon:'🔍' },
+  { id:'assemblage',       label:'Assemblage',     icon:'🍷' },
+  { id:'attente_tirage',   label:'Attente',        icon:'⏳' },
+  { id:'tirage',           label:'Tirage',         icon:'🍾' },
+  { id:'prise_mousse',     label:'Prise mousse',   icon:'🫧' },
+  { id:'elevage_lattes',   label:'Lattes',         icon:'🏺' },
+  { id:'pre_degorgement',  label:'Pré-dégorg.',    icon:'🔬' },
+  { id:'degorgement',      label:'Dégorg.',        icon:'✂️' },
+  { id:'expedition',       label:'Expédition',     icon:'📦' },
+];
+
+const WORKFLOW_PETNAT = [
+  { id:'reception',        label:'Réception',      icon:'📥' },
+  { id:'analyse',          label:'Analyse',        icon:'⚗' },
+  { id:'attente_tirage',   label:'Attente',        icon:'⏳' },
+  { id:'tirage',           label:'Tirage',         icon:'🍾' },
+  { id:'prise_mousse',     label:'Prise mousse',   icon:'🫧' },
+  { id:'expedition',       label:'Expédition',     icon:'📦' },
+];
+
+function getWorkflow(type_lot) {
+  return type_lot === 'petnat' ? WORKFLOW_PETNAT : WORKFLOW_METHODE;
+}
+
+function timelineHTML(lot) {
+  const steps = getWorkflow(lot.type_lot);
+  const current = lot.statut_process || 'reception';
+  const currentIdx = steps.findIndex(s => s.id === current);
+  let html = '<div class="lot-timeline"><div class="timeline-track">';
+  steps.forEach((step, i) => {
+    const isDone   = i < currentIdx;
+    const isActive = i === currentIdx;
+    const cls = isDone ? 'done' : isActive ? 'active' : 'future';
+    const dotIcon = isDone ? '✓' : step.icon;
+    html += `<div class="tl-step ${cls}" onclick="${isActive||isDone?'':'changeStatut(\'' + lot.id + '\',\'' + step.id + '\')'}">
+      <div class="tl-dot">${dotIcon}</div>
+      <div class="tl-label">${step.label}</div>
+    </div>`;
+    if (i < steps.length - 1) {
+      html += `<div class="tl-connector ${isDone?'done':''}"></div>`;
+    }
+  });
+  html += '</div></div>';
+  return html;
+}
+
+function elevageHTML(lot) {
+  if (!lot.date_tirage || !['elevage_lattes','pre_degorgement','degorgement'].includes(lot.statut_process)) return '';
+  const duree_cible = lot.duree_elevage_mois || 12;
+  const debut = new Date(lot.date_tirage);
+  const maintenant = new Date();
+  const mois_ecoules = Math.max(0, (maintenant - debut) / (1000 * 60 * 60 * 24 * 30.5));
+  const pct = Math.min(100, Math.round(mois_ecoules / duree_cible * 100));
+  const restant = Math.max(0, duree_cible - mois_ecoules).toFixed(1);
+  let badge, badgeCls;
+  if (pct >= 100)      { badge = '✅ Prêt pour dégorgement'; badgeCls = 'eb-pret'; }
+  else if (pct >= 80)  { badge = '🟡 Bientôt prêt'; badgeCls = 'eb-ok'; }
+  else                 { badge = `⏳ ${restant} mois restants`; badgeCls = 'eb-attente'; }
+  return `<div class="elevage-bar">
+    <div style="font-size:11px;font-weight:600;color:var(--wine);margin-bottom:4px">🏺 Élevage sur lattes</div>
+    <div class="elevage-track"><div class="elevage-fill" style="width:${pct}%"></div></div>
+    <div class="elevage-meta">
+      <span>${mois_ecoules.toFixed(1)} mois écoulés</span>
+      <span>Objectif : ${duree_cible} mois</span>
+    </div>
+    <span class="elevage-badge ${badgeCls}">${badge}</span>
+  </div>`;
+}
+
+function tirageHTML(lot) {
+  if (!lot.date_tirage && !lot.nb_bouteilles && !lot.liqueur_dosage && !lot.levain_cuve) return '';
+  return `<div class="tirage-card">
+    <div class="tirage-title">🍾 Fiche de tirage</div>
+    <div class="tirage-grid">
+      ${lot.date_tirage ? `<div class="tirage-field"><div class="tirage-field-label">Date tirage</div><div class="tirage-field-val">${fmtDate(lot.date_tirage)}</div></div>` : ''}
+      ${lot.nb_bouteilles ? `<div class="tirage-field"><div class="tirage-field-label">Bouteilles</div><div class="tirage-field-val">${lot.nb_bouteilles.toLocaleString()} <span class="tirage-field-unit">cols</span></div></div>` : ''}
+      ${lot.liqueur_dosage ? `<div class="tirage-field"><div class="tirage-field-label">Liqueur tirage</div><div class="tirage-field-val">${lot.liqueur_dosage} <span class="tirage-field-unit">g/L</span></div></div>` : ''}
+      ${lot.levain_cuve ? `<div class="tirage-field"><div class="tirage-field-label">Levain</div><div class="tirage-field-val">${lot.levain_cuve}</div></div>` : ''}
+      ${lot.levures_dose ? `<div class="tirage-field"><div class="tirage-field-label">Levures</div><div class="tirage-field-val">${lot.levures_dose} <span class="tirage-field-unit">g/hL</span></div></div>` : ''}
+      ${lot.bentonite_dose ? `<div class="tirage-field"><div class="tirage-field-label">Bentonite</div><div class="tirage-field-val">${lot.bentonite_dose} <span class="tirage-field-unit">g/hL</span></div></div>` : ''}
+      ${lot.duree_elevage_mois ? `<div class="tirage-field"><div class="tirage-field-label">Élevage cible</div><div class="tirage-field-val">${lot.duree_elevage_mois} <span class="tirage-field-unit">mois</span></div></div>` : ''}
+      ${lot.pression_objectif ? `<div class="tirage-field"><div class="tirage-field-label">Pression cible</div><div class="tirage-field-val">${lot.pression_objectif} <span class="tirage-field-unit">bar</span></div></div>` : ''}
+    </div>
+  </div>`;
+}
+
+async function changeStatut(lotId, newStatut) {
+  if (myRole !== 'admin') { toast('⛔ Réservé à l\'admin'); return; }
+  const lot = db.lots.find(x => x.id === lotId);
+  const steps = getWorkflow(lot?.type_lot);
+  const newIdx = steps.findIndex(s => s.id === newStatut);
+  const curIdx = steps.findIndex(s => s.id === (lot?.statut_process||'reception'));
+  if (newIdx !== curIdx + 1) { toast('⚠ Avancez étape par étape'); return; }
+  const { error } = await sb.from('lots').update({ statut_process: newStatut }).eq('id', lotId);
+  if (error) { toast('❌ ' + error.message); return; }
+  await logAction('lot_statut', 'lot', lotId, { statut: newStatut, designation: lot?.designation });
+  toast('✓ Avancé : ' + steps[newIdx]?.label);
+}
+
+
+// ════════════════════════════════════════════
+// FICHE DÉGORGEMENT
+// ════════════════════════════════════════════
+const BOUCHAGE_LABELS = {
+  brut_nature:'Brut Nature', extra_brut:'Extra Brut', brut:'Brut',
+  extra_dry:'Extra Dry', sec:'Sec', demi_sec:'Demi-sec'
+};
+const DEC_LABELS = {
+  valider:'✅ Validé pour dégorgement',
+  prolonger:'⏳ Prolonger élevage',
+  analyser:'🔬 Analyse complémentaire'
+};
+
+function degorgementHTML(lot) {
+  if (!lot.date_degorgement && !lot.nb_degorge) return '';
+  const perte = lot.perte_cols || 0;
+  const tire = lot.nb_bouteilles || 0;
+  const degorge = lot.nb_degorge || 0;
+  const rend = tire > 0 ? (degorge / tire * 100).toFixed(1) : null;
+  const rendCls = !rend ? '' : rend >= 99 ? 'rend-ok' : rend >= 97 ? 'rend-warn' : 'rend-bad';
+  return `<div class="deg-card">
+    <div class="deg-title">✂️ Fiche dégorgement</div>
+    <div class="deg-grid">
+      ${lot.date_degorgement ? `<div class="deg-field"><div class="deg-field-label">Date</div><div class="deg-field-val">${fmtDate(lot.date_degorgement)}</div></div>` : ''}
+      ${degorge ? `<div class="deg-field"><div class="deg-field-label">Cols dégorgés</div><div class="deg-field-val">${degorge.toLocaleString()} <span class="deg-field-unit">cols</span></div></div>` : ''}
+      ${perte ? `<div class="deg-field"><div class="deg-field-label">Perte / casse</div><div class="deg-field-val">${perte.toLocaleString()} <span class="deg-field-unit">cols</span></div></div>` : ''}
+      ${lot.dosage_expedition ? `<div class="deg-field"><div class="deg-field-label">Dosage expédition</div><div class="deg-field-val">${lot.dosage_expedition} <span class="deg-field-unit">g/L</span></div></div>` : ''}
+      ${lot.bouchage ? `<div class="deg-field"><div class="deg-field-label">Type</div><div class="deg-field-val">${BOUCHAGE_LABELS[lot.bouchage]||lot.bouchage}</div></div>` : ''}
+      ${lot.lot_habillage ? `<div class="deg-field"><div class="deg-field-label">Habillage</div><div class="deg-field-val">${lot.lot_habillage}</div></div>` : ''}
+    </div>
+    ${rend ? `<div class="rendement-chip ${rendCls}">📊 Rendement : ${rend}% (${perte} pertes)</div>` : ''}
+  </div>`;
+}
+
+// ════════════════════════════════════════════
+// FICHE DÉGUSTATION
+// ════════════════════════════════════════════
+function degustationHTML(lot) {
+  if (!lot.deg_decision && !lot.deg_bulle && !lot.deg_nez) return '';
+  return `<div class="degustation-card">
+    <div class="deg2-title">🍷 Dégustation pré-dégorgement</div>
+    <div class="tirage-grid">
+      ${lot.deg_bulle   ? `<div class="tirage-field"><div class="tirage-field-label">Bulle</div><div class="tirage-field-val" style="font-size:13px">${lot.deg_bulle}</div></div>` : ''}
+      ${lot.deg_aspect  ? `<div class="tirage-field"><div class="tirage-field-label">Aspect</div><div class="tirage-field-val" style="font-size:13px">${lot.deg_aspect}</div></div>` : ''}
+      ${lot.deg_nez     ? `<div class="tirage-field"><div class="tirage-field-label">Nez</div><div class="tirage-field-val" style="font-size:13px">${lot.deg_nez}</div></div>` : ''}
+      ${lot.deg_bouche  ? `<div class="tirage-field"><div class="tirage-field-label">Bouche</div><div class="tirage-field-val" style="font-size:13px">${lot.deg_bouche}</div></div>` : ''}
+    </div>
+    ${lot.deg_comment ? `<div style="font-size:12px;color:var(--txt2);font-style:italic;margin-top:8px">"${lot.deg_comment}"</div>` : ''}
+    ${lot.deg_decision ? `<div class="deg2-decision ${lot.deg_decision==='valider'?'dec-valider':'dec-prolonger'}">${DEC_LABELS[lot.deg_decision]||lot.deg_decision}</div>` : ''}
+  </div>`;
+}
+
+// ════════════════════════════════════════════
+// KPI PRODUCTION — tableau de bord
+// ════════════════════════════════════════════
+function renderKPI() {
+  const el = document.getElementById('kpi-grid');
+  if (!el) return;
+  const lots = db.lots;
+  // Cols en stock (dégorgés non expédiés)
+  const colsStock = lots.reduce((s,l) => s + (l.nb_degorge||0), 0);
+  // Lots sur lattes
+  const lattes = lots.filter(l => l.statut_process === 'elevage_lattes').length;
+  // Prêts dégorgement
+  const prets = lots.filter(l => {
+    if (!l.date_tirage || !l.duree_elevage_mois) return false;
+    const mois = (new Date() - new Date(l.date_tirage)) / (1000*60*60*24*30.5);
+    return mois >= l.duree_elevage_mois && l.statut_process === 'elevage_lattes';
+  }).length;
+  // Rendement moyen
+  const avecRend = lots.filter(l => l.nb_bouteilles > 0 && l.nb_degorge > 0);
+  const rendMoyen = avecRend.length > 0
+    ? (avecRend.reduce((s,l) => s + l.nb_degorge/l.nb_bouteilles, 0) / avecRend.length * 100).toFixed(1)
+    : null;
+  // Incidents ouverts
+  const incidents = db.incidents.filter(i => i.statut === 'ouvert').length;
+  // Cols tirés ce mois
+  const thisMonth = new Date().toISOString().slice(0,7);
+  const tiresMois = lots.filter(l => l.date_tirage?.startsWith(thisMonth)).reduce((s,l) => s+(l.nb_bouteilles||0), 0);
+
+  el.innerHTML = `
+    <div class="kpi-card ${prets>0?'alert':''}">
+      <div class="kpi-val">${prets}</div>
+      <div class="kpi-label">🏺 Prêts dégorgement</div>
+      ${prets>0?'<div class="kpi-sub" style="color:var(--warn)">⚠ À planifier</div>':''}
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">${lattes}</div>
+      <div class="kpi-label">Sur lattes</div>
+    </div>
+    <div class="kpi-card ${rendMoyen&&rendMoyen<97?'alert':'ok'}">
+      <div class="kpi-val">${rendMoyen||'—'}<span style="font-size:14px;color:var(--txt3)">%</span></div>
+      <div class="kpi-label">📊 Rendement moyen</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">${colsStock>0?(colsStock/1000).toFixed(0)+'k':'—'}</div>
+      <div class="kpi-label">Cols dégorgés</div>
+    </div>
+    <div class="kpi-card ${incidents>0?'alert':''}">
+      <div class="kpi-val">${incidents}</div>
+      <div class="kpi-label">🔧 Incidents ouverts</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-val">${tiresMois>0?(tiresMois/1000).toFixed(0)+'k':'—'}</div>
+      <div class="kpi-label">Tirés ce mois</div>
+    </div>`;
+}
+
+
+// ══════════════════════════════════════════════
+// 4-TAB NAVIGATION
+// ══════════════════════════════════════════════
+let curTab = 'plan';
+let planDateOffset = 0; // days from today
+let planSvc = 'all';
+
+function showPage(p, el) {
+  document.querySelectorAll('.page').forEach(x => x.classList.remove('active'));
+  document.querySelectorAll('.nb').forEach(x => x.classList.remove('active'));
+  document.getElementById('page-' + p).classList.add('active');
+  el.classList.add('active');
+  curTab = p;
+  document.getElementById('main-scroll').scrollTop = 0;
+  if (p === 'plan')  { renderPlanPage(); }
+  if (p === 'prod')  { hideProdSub(); updateProdTiles(); }
+  if (p === 'maint') { renderIncMaint(); }
+  if (p === 'msgs')  { renderMsgsPage(); }
+}
+
+function fabAction() {
+  if (curTab === 'maint') { openSheet('s-newinc'); return; }
+  if (curTab === 'msgs' && myRole !== 'admin') { openSheet('s-newmsg'); return; }
+  if (myRole === 'admin') openSheet('s-menu');
+}
+
+// ── BADGES ──
+function updateBadges() {
+  const openInc = db.incidents.filter(i => i.statut === 'ouvert').length;
+  const unreadMsg = db.messages.filter(m => !m.lu).length;
+  const today = new Date(); today.setHours(0,0,0,0);
+  const todayStr = today.toISOString().slice(0,10);
+  const todayItems = db.items.filter(i => !i.done && i.date_limite === todayStr).length;
+  setBadge('badge-plan', todayItems);
+  setBadge('badge-maint', openInc);
+  setBadge('badge-msgs', unreadMsg);
+}
+function setBadge(id, n) {
+  const el = document.getElementById(id);
+  if (!el) return;
+  el.style.display = n > 0 ? 'flex' : 'none';
+  el.textContent = n > 9 ? '9+' : n;
+}
+
+// ══════════════════════════════════════════════
+// PLANNING PAGE
+// ══════════════════════════════════════════════
+function changeDay(d) { planDateOffset += d; renderPlanPage(); }
+function setPlanSvc(s, el) {
+  document.querySelectorAll('.pst').forEach(x => x.classList.remove('active'));
+  el.classList.add('active'); planSvc = s; renderPlanPage();
+}
+function getPlanDate() {
+  const d = new Date(); d.setDate(d.getDate() + planDateOffset);
+  return d;
+}
+function renderPlanPage() {
+  const d = getPlanDate();
+  const dateStr = d.toISOString().slice(0,10);
+  const todayStr = new Date().toISOString().slice(0,10);
+  const isToday = dateStr === todayStr;
+  const DAY_FR = ['Dim','Lun','Mar','Mer','Jeu','Ven','Sam'];
+  const MONTH_FR = ['jan','fév','mar','avr','mai','jun','jul','aoû','sep','oct','nov','déc'];
+  const lbl = isToday
+    ? "Aujourd'hui — " + DAY_FR[d.getDay()] + ' ' + d.getDate() + ' ' + MONTH_FR[d.getMonth()]
+    : DAY_FR[d.getDay()] + ' ' + d.getDate() + ' ' + MONTH_FR[d.getMonth()] + ' ' + d.getFullYear();
+  document.getElementById('plan-date-lbl').textContent = lbl;
+  // Absents
+  const absents = (db.evenements||[]).filter(e => e.type === 'absence' && e.date_debut <= dateStr && (e.date_fin||e.date_debut) >= dateStr);
+  const abEl = document.getElementById('plan-absents');
+  abEl.innerHTML = absents.length
+    ? `<div class="absent-strip">${absents.map(a=>`<div class="absent-chip">👤 ${a.titre}</div>`).join('')}</div>` : '';
+  // Events
+  const events = (db.evenements||[]).filter(e => e.type === 'event' && e.date_debut <= dateStr && (e.date_fin||e.date_debut) >= dateStr);
+  // Items
+  let items = db.items.filter(i => i.date_limite === dateStr);
+  if (planSvc !== 'all') items = items.filter(i => i.service === planSvc || i.assigne_a === planSvc);
+  items.sort((a,b) => {
+    if (a.done !== b.done) return a.done ? 1 : -1;
+    const po = {urgent:0,normal:1,bas:2};
+    return (po[a.priorite]||1) - (po[b.priorite]||1);
+  });
+  let html = '';
+  events.forEach(e => {
+    html += `<div class="plan-item-card" style="border:.5px solid rgba(26,122,80,.25)">
+      <div style="width:5px;background:#1a7a50;flex-shrink:0"></div>
+      <div class="plan-item-body">
+        <div style="display:flex;align-items:center;gap:6px;margin-bottom:4px"><span style="font-size:10px;font-weight:600;padding:2px 7px;border-radius:99px;background:rgba(26,122,80,.12);color:#1a7a50">Événement</span></div>
+        <div class="plan-item-title">📅 ${e.titre}</div>
+        <div class="plan-item-meta">${e.motif||''}</div>
+      </div>
+    </div>`;
+  });
+  if (items.length === 0 && events.length === 0) {
+    html += '<div class="empty"><div class="empty-icon">📋</div><div class="empty-txt">Aucune tâche ce jour</div></div>';
+  } else {
+    const PRIO_STRIPE = {urgent:'plan-stripe-u',normal:'plan-stripe-n',bas:'plan-stripe-b'};
+    const PRIO_ICON   = {urgent:'🔴',normal:'🟡',bas:'🟢'};
+    items.forEach(i => {
+      const done = !!i.done;
+      const assign = i.assigne_a === 'tous' ? "Toute l'équipe" : (i.assigne_a||'');
+      html += `<div class="plan-item-card" onclick="ouvrirClotItem('${i.id}')">
+        <div class="${done?'plan-stripe-d':PRIO_STRIPE[i.priorite]||'plan-stripe-n'}"></div>
+        <div class="plan-item-body">
+          <div style="display:flex;align-items:center;gap:6px;margin-bottom:5px">
+            <span class="${i.type==='ot'?'plan-tag-ot':'plan-tag-t'}">${i.type==='ot'?'OT Cave':'Tâche'}</span>
+            ${i.service?`<span style="font-size:10px;color:var(--txt3)">${i.service}</span>`:''}
+          </div>
+          <div class="plan-item-title ${done?'done':''}">${PRIO_ICON[i.priorite]||'🟡'} ${i.titre}</div>
+          <div class="plan-item-meta">
+            ${assign?`<span style="font-weight:500;color:var(--txt2)">👤 ${assign}</span>`:''}
+            ${i.type==='ot'&&i.cuves?`<span>⬡ ${i.cuves}</span>`:''}
+            ${i.detail?`<span>${i.detail.slice(0,40)}</span>`:''}
+          </div>
+          ${done?`<div class="plan-item-done">✓ Fait par ${prenom2(i.done_by)}${i.done_comment?' — '+i.done_comment:''}</div>`:''}
+        </div>
+        <div class="plan-item-check ${done?'done':''}">${done?'✓':'○'}</div>
+      </div>`;
+    });
+  }
+  document.getElementById('plan-list').innerHTML = html;
+}
+
+function prenom2(uid) { return db.profiles.find(p=>p.id===uid)?.prenom||'—'; }
+
+// ── CLÔTURE (new name to avoid conflict) ──
+function ouvrirClotItem(id) {
+  const item = db.items.find(x => x.id === id);
+  if (!item || item.done) return;
+  pendingClotId2 = id;
+  document.getElementById('clot2-info').innerHTML = `
+    <div style="font-size:11px;color:var(--txt3);text-transform:uppercase;letter-spacing:.06em;margin-bottom:6px;font-weight:600">À réaliser</div>
+    <div style="font-size:15px;font-weight:500;color:var(--txt)">${item.priorite==='urgent'?'🔴':item.priorite==='bas'?'🟢':'🟡'} ${item.titre}</div>
+    ${item.type==='ot'?`<div style="font-size:12px;color:var(--txt3);margin-top:4px">${OP_LABELS[item.operation]||''} · ${item.cuves||''}</div>`:''}
+    ${item.notes?`<div style="font-size:12px;color:var(--txt2);font-style:italic;margin-top:4px">${item.notes}</div>`:''}`;
+  document.getElementById('clot2-comment').value = '';
+  openSheet('s-clot2');
+}
+let pendingClotId2 = null;
+async function cloturerItem2() {
+  if (!pendingClotId2) return;
+  const comment = document.getElementById('clot2-comment').value || null;
+  const item = db.items.find(x => x.id === pendingClotId2);
+  const { error } = await supabase.from('planning').update({
+    done: true, done_by: currentUser.id,
+    done_at: new Date().toISOString(), done_comment: comment,
+  }).eq('id', pendingClotId2);
+  if (error) { toast('❌ ' + error.message); return; }
+  await supabase.from('historique').insert({ user_id: currentUser.id, action_type: item?.type==='ot'?'ot_done':'task_done', details: {titre:item?.titre, cuve:item?.cuves}, commentaire: comment }).catch(()=>{});
+  closeSheet('s-clot2');
+  toast('✓ Réalisé ! 🎉');
+  launchConfetti(); showXPNotif(15); setTimeout(()=>updateXPBar(true), 400);
+  pendingClotId2 = null;
+}
+
+// ══════════════════════════════════════════════
+// PRODUCTION SUB-MENU
+// ══════════════════════════════════════════════
+const PROD_TITLES = {cuves:'⬡ Cuves', lots:'◈ Lots', analyses:'⚗ Analyses', stock:'📦 Stock', histo:'📜 Historique', kpi:'📊 KPI Production'};
+
+function updateProdTiles() {
+  const occ = db.cuves.filter(c=>c.etat!=='vide').length;
+  document.getElementById('pt-cuves').textContent = occ+'/'+db.cuves.length+' occupées';
+  const actifs = db.lots.filter(l=>l.statut_process!=='expedition').length;
+  document.getElementById('pt-lots').textContent = actifs+' en production';
+  document.getElementById('pt-analyses').textContent = db.analyses.length+' saisies';
+  const alertes = db.inventaire.filter(i=>i.seuil_alerte&&i.quantite<=i.seuil_alerte).length;
+  document.getElementById('pt-stock').textContent = alertes>0?alertes+' alertes ⚠':'Tout OK';
+}
+
+function showProdSub(sec) {
+  document.getElementById('prod-home').style.display = 'none';
+  document.getElementById('prod-sub').style.display = 'block';
+  document.getElementById('prod-sub-title').textContent = PROD_TITLES[sec]||sec;
+  const el = document.getElementById('prod-sub-content');
+  el.innerHTML = '<div class="loading">Chargement…</div>';
+  if (sec==='cuves')    renderCuvesSub(el);
+  else if (sec==='lots')     renderLotsSub(el);
+  else if (sec==='analyses') renderAnalysesSub(el);
+  else if (sec==='stock')    renderStockSub(el);
+  else if (sec==='histo')    renderHistoSub(el);
+  else if (sec==='kpi')      renderKPISub(el);
+}
+function hideProdSub() {
+  document.getElementById('prod-home').style.display = 'block';
+  document.getElementById('prod-sub').style.display = 'none';
+}
+
+function renderCuvesSub(el) {
+  const etatB = e => e==='fermentation'?'b-enc':e==='stabilise'?'b-ok':e==='attente'?'b-warn':e==='nettoyage'?'b-net':'b-vide';
+  const COL_FILL = {rouge:'#c0392b',blanc:'#c8a84a',rose:'#b8456a',vide:'#ccc'};
+  el.innerHTML = db.cuves.length ? db.cuves.map((c,i) => {
+    const pct = c.capacite > 0 ? Math.round((c.volume_actuel||0)/c.capacite*100) : 0;
+    const lot = db.lots.find(l => l.cuves_associees === c.nom && l.statut_process !== 'expedition');
+    return `<div class="cuve-card" style="animation-delay:${i*.03}s">
+      <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
+        <div><div class="cuve-id">${c.nom}</div><div class="cuve-meta">${c.type==='cuve'?'Cuve':'Cuvon'} · ${c.capacite} hL</div></div>
+        <div style="display:flex;flex-direction:column;align-items:flex-end;gap:4px">
+          <span class="badge b-${c.couleur||'vide'}">${COL_LABELS[c.couleur]||'Vide'}</span>
+          ${c.type_vin?`<span class="badge" style="background:var(--wine-dim);color:var(--wine);font-size:10px">${TYPE_LABELS[c.type_vin]||c.type_vin}</span>`:''}
+          <span class="badge ${etatB(c.etat)}">${ETAT_LABELS[c.etat]||'—'}</span>
+        </div>
+      </div>
+      <div class="fill-track"><div class="fill-bar" style="width:${pct}%;background:${COL_FILL[c.couleur]||'#ccc'}"></div></div>
+      <div class="fill-meta"><span>${c.volume_actuel||0} hL</span><span>${pct}%</span></div>
+      ${c.designation?`<div style="font-size:12px;color:var(--txt2);margin-top:5px">📋 ${c.designation}</div>`:''}
+      ${lot?`<div style="font-size:12px;color:var(--blue);margin-top:3px;font-weight:500">◈ ${lot.designation}</div>`:''}
+      <div style="display:flex;gap:6px;margin-top:8px">
+        <div class="cuve-edit-btn" style="flex:1" onclick="ouvrirModifCuve('${c.id}')">✏️ Modifier</div>
+        ${myRole==='admin'?`<div class="cuve-edit-btn del" onclick="supprimerCuve('${c.id}','${c.nom}')">🗑</div>`:''}
+      </div>
+    </div>`;
+  }).join('') : '<div class="empty"><div class="empty-icon">⬡</div><div class="empty-txt">Aucune cuve</div></div>';
+}
+
+function renderLotsSub(el) {
+  // Reuse existing renderLots
+  renderLots();
+  el.innerHTML = document.getElementById('lots-list')?.innerHTML || '';
+}
+
+function renderAnalysesSub(el) {
+  renderAnalyses();
+  el.innerHTML = document.getElementById('analyses-list')?.innerHTML || '';
+}
+
+function renderStockSub(el) {
+  renderInventaire();
+  el.innerHTML = document.getElementById('inv-list')?.innerHTML || '';
+}
+
+function renderHistoSub(el) {
+  renderHisto();
+  el.innerHTML = document.getElementById('histo-list')?.innerHTML || '';
+}
+
+function renderKPISub(el) {
+  el.innerHTML = '';
+  const kpiGrid = document.createElement('div');
+  kpiGrid.id = 'kpi-grid-sub';
+  el.appendChild(kpiGrid);
+  // Reuse KPI logic
+  const prets = db.lots.filter(l => {
+    if (!l.date_tirage || !l.duree_elevage_mois) return false;
+    const m = (new Date() - new Date(l.date_tirage)) / (1000*60*60*24*30.5);
+    return m >= l.duree_elevage_mois && l.statut_process === 'elevage_lattes';
+  }).length;
+  const lattes = db.lots.filter(l => l.statut_process === 'elevage_lattes').length;
+  const avecRend = db.lots.filter(l => l.nb_bouteilles > 0 && l.nb_degorge > 0);
+  const rendMoyen = avecRend.length > 0 ? (avecRend.reduce((s,l)=>s+l.nb_degorge/l.nb_bouteilles,0)/avecRend.length*100).toFixed(1) : null;
+  const openInc = db.incidents.filter(i => i.statut === 'ouvert').length;
+  const kpis = [
+    {v:prets, l:'Prêts dégorgement', a:prets>0},
+    {v:lattes, l:'Sur lattes', a:false},
+    {v:rendMoyen?rendMoyen+'%':'—', l:'Rendement moyen', a:rendMoyen&&rendMoyen<97},
+    {v:openInc, l:'Incidents ouverts', a:openInc>0},
+  ];
+  kpiGrid.innerHTML = `<div style="display:grid;grid-template-columns:1fr 1fr;gap:10px">
+    ${kpis.map(k=>`<div style="background:var(--surf);border:1px solid ${k.a?'rgba(192,32,16,.3)':'var(--bord)'};border-radius:var(--r);padding:14px 16px">
+      <div style="font-size:28px;font-weight:300;color:${k.a?'var(--danger)':'var(--wine)'};font-family:'DM Serif Display',serif;line-height:1">${k.v}</div>
+      <div style="font-size:11px;color:var(--txt3);margin-top:3px">${k.l}</div>
+    </div>`).join('')}
+  </div>`;
+}
+
+// ══════════════════════════════════════════════
+// MAINTENANCE (new render for new page)
+// ══════════════════════════════════════════════
+function renderIncMaint() {
+  let list = db.incidents;
+  if (incFilter !== 'all') list = list.filter(i => i.statut === incFilter);
+  const el = document.getElementById('inc-list-maint');
+  if (!el) return;
+  el.innerHTML = list.length ? list.map(i => `
+    <div class="inc-card ${i.priorite||'normal'}" style="margin-bottom:8px">
+      <div class="inc-header">
+        <div class="inc-titre">${i.priorite==='urgent'?'🔴':i.priorite==='bas'?'🟢':'🟡'} ${i.titre}</div>
+        <span class="inc-statut inc-${i.statut}">${i.statut==='ouvert'?'Ouvert':i.statut==='en_cours'?'En cours':'✅ Résolu'}</span>
+      </div>
+      ${i.description?`<div class="inc-desc">${i.description}</div>`:''}
+      <div class="inc-meta">${i.cuve_id?'⬡ '+i.cuve_id+' · ':''}Signalé par ${prenom2(i.created_by)} · ${fmtTimeAgo(i.created_at)}</div>
+      ${i.statut!=='resolu' && myRole==='admin' ? `<div class="inc-actions">
+        ${i.statut==='ouvert'?`<div class="inc-btn primary" onclick="majIncident('${i.id}','en_cours')">🟡 Prendre en charge</div>`:''}
+        <div class="inc-btn success" onclick="majIncident('${i.id}','resolu')">✅ Résolu</div>
+      </div>`:''}
+    </div>`).join('')
+    : '<div class="empty"><div class="empty-icon">🔧</div><div class="empty-txt">Aucun incident</div></div>';
+}
+
+// ══════════════════════════════════════════════
+// MESSAGES (new render for new page)
+// ══════════════════════════════════════════════
+function renderMsgsPage() {
+  const isAdmin = myRole === 'admin';
+  document.getElementById('emp-msg-area').style.display = isAdmin ? 'none' : 'block';
+  document.getElementById('admin-msg-area').style.display = isAdmin ? 'block' : 'none';
+  if (!isAdmin) return;
+  const msgs = db.messages;
+  const nonLus = msgs.filter(m => !m.lu).length;
+  const lbl = document.getElementById('msg-unread-lbl');
+  if (lbl) lbl.textContent = nonLus > 0 ? nonLus + ' non lus' : '';
+  const el = document.getElementById('msg-list-admin');
+  if (!el) return;
+  const MSG_PRIO = {urgent:'🔴',normal:'🟡',info:'🔵'};
+  const MSG_CAT = {commande:'📦 Commander',maintenance:'🔧 Maintenance',probleme:'⚠️ Problème',info:'💬 Info',autre:'Autre'};
+  el.innerHTML = msgs.length ? msgs.map(m => `
+    <div class="msg-card ${m.priorite||'normal'} ${m.traite?'lu':''}">
+      <div class="msg-prio">${MSG_PRIO[m.priorite]||'🟡'}</div>
+      <div class="msg-body">
+        <div class="msg-from">${prenom2(m.created_by)} · ${MSG_CAT[m.categorie]||m.categorie||'—'}</div>
+        <div class="msg-text">${m.texte}</div>
+        <div class="msg-time">${fmtTimeAgo(m.created_at)}</div>
+        ${!m.traite?`<div style="display:flex;gap:6px;margin-top:8px">
+          ${!m.lu?`<div class="msg-lu-btn" onclick="marquerLu('${m.id}',false)">👁 Lu</div>`:''}
+          <div class="msg-lu-btn" style="background:var(--ok-l);border-color:rgba(42,122,32,.2);color:var(--ok)" onclick="marquerLu('${m.id}',true)">✅ Traité</div>
+        </div>`:`<div style="font-size:11px;color:var(--ok);margin-top:4px;font-weight:500">✅ Traité</div>`}
+      </div>
+    </div>`).join('')
+    : '<div style="font-size:13px;color:var(--txt3);padding:8px 0">Aucun message</div>';
+}
+
+// ── XP SYSTEM ──
+const LEVELS = [
+  {lv:1,title:"Stagiaire de cave",xp:0},
+  {lv:2,title:"Apprenti vigneron",xp:50},
+  {lv:3,title:"Caviste confirmé",xp:120},
+  {lv:4,title:"Chef de cuve",xp:250},
+  {lv:5,title:"Maître de chai",xp:450},
+  {lv:6,title:"Roi du Tirage",xp:700},
+  {lv:7,title:"Bouchon d'Or",xp:1000},
+  {lv:8,title:"Légende du Millésime",xp:1500},
+];
+
+function computeXP() {
+  if (!me) return 0;
+  const mine = db.items.filter(i => i.done && i.done_by === me.id);
+  return mine.length * 15;
+}
+
+function updateXPBar(animate=false) {
+  const xp = computeXP();
+  let lv = LEVELS[0];
+  for (const l of LEVELS) { if (xp >= l.xp) lv = l; }
+  const next = LEVELS.find(l => xp < l.xp);
+  const pct = next ? Math.round((xp - lv.xp)/(next.xp - lv.xp)*100) : 100;
+  document.getElementById('xp-lv').textContent = `Nv.${lv.lv} · ${lv.title}`;
+  document.getElementById('xp-pts').textContent = next ? `${xp}/${next.xp} XP` : `${xp} XP`;
+  const fill = document.getElementById('xp-fill');
+  if (animate) { fill.style.width='0%'; setTimeout(()=>fill.style.width=pct+'%',100); }
+  else fill.style.width = pct+'%';
+}
+
+function showXPNotif(xp, msg='') {
+  const el = document.getElementById('xp-notif');
+  el.textContent = `+${xp} XP${msg?' — '+msg:''}`;
+  el.classList.add('show');
+  setTimeout(()=>el.classList.remove('show'), 2800);
+}
+
+// ── CONFETTI ──
+function launchConfetti() {
+  const canvas = document.getElementById('confetti-canvas');
+  canvas.style.display='block';
+  canvas.width=window.innerWidth; canvas.height=window.innerHeight;
+  const ctx = canvas.getContext('2d');
+  const colors=['#7a1a2e','#c8403a','#f0c040','#4a9a3a','#1a5a9a'];
+  const pieces = Array.from({length:70},()=>({
+    x:Math.random()*canvas.width, y:-20,
+    w:Math.random()*8+4, h:Math.random()*12+6,
+    color:colors[Math.floor(Math.random()*colors.length)],
+    vx:(Math.random()-.5)*6, vy:Math.random()*5+3,
+    rot:Math.random()*360, vrot:(Math.random()-.5)*10, opacity:1
+  }));
+  let f=0;
+  function draw(){
+    ctx.clearRect(0,0,canvas.width,canvas.height);
+    pieces.forEach(p=>{
+      p.x+=p.vx;p.y+=p.vy;p.rot+=p.vrot;p.vy+=.15;p.opacity-=.01;
+      if(p.opacity<=0)return;
+      ctx.save();ctx.globalAlpha=Math.max(0,p.opacity);
+      ctx.translate(p.x,p.y);ctx.rotate(p.rot*Math.PI/180);
+      ctx.fillStyle=p.color;ctx.fillRect(-p.w/2,-p.h/2,p.w,p.h);
+      ctx.restore();
+    });
+    f++;
+    if(f<100)requestAnimationFrame(draw);
+    else{ctx.clearRect(0,0,canvas.width,canvas.height);canvas.style.display='none';}
+  }
+  draw();
+}
+
+// ── SOUNDS ──
+function playSound(type) {
+  try {
+    const ctx = new (window.AudioContext||window.webkitAudioContext)();
+    const osc=ctx.createOscillator(), gain=ctx.createGain();
+    osc.connect(gain);gain.connect(ctx.destination);
+    if(type==='done'){
+      osc.frequency.setValueAtTime(523,ctx.currentTime);
+      osc.frequency.setValueAtTime(659,ctx.currentTime+.1);
+      osc.frequency.setValueAtTime(784,ctx.currentTime+.2);
+      gain.gain.setValueAtTime(.12,ctx.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.001,ctx.currentTime+.4);
+      osc.start();osc.stop(ctx.currentTime+.4);
+    }
+  } catch(e){}
+}
+
+
+// ── SEND MSG v2 ──
+async function sendMsg2() {
+  const texte = document.getElementById('nm2-text').value.trim();
+  if (!texte) { toast('Message requis'); return; }
+  const { error } = await supabase.from('messages').insert({
+    priorite: document.getElementById('nm2-prio').value,
+    categorie: document.getElementById('nm2-cat').value,
+    texte, lu: false, traite: false, created_by: currentUser.id,
+  });
+  if (error) { toast('❌ ' + error.message); return; }
+  closeSheet('s-newmsg');
+  document.getElementById('nm2-text').value = '';
+  toast('✉️ Message envoyé !');
+}
+
+// ── SAVE INC v2 ──
+async function saveInc2() {
+  const titre = document.getElementById('ni2-titre').value.trim();
+  if (!titre) { toast('Titre requis'); return; }
+  const { error } = await supabase.from('incidents').insert({
+    titre, priorite: document.getElementById('ni2-prio').value,
+    cuve_id: document.getElementById('ni2-cuve').value || null,
+    description: document.getElementById('ni2-desc').value || null,
+    created_by: currentUser.id, statut: 'ouvert',
+  });
+  if (error) { toast('❌ ' + error.message); return; }
+  closeSheet('s-newinc');
+  ['ni2-titre','ni2-cuve','ni2-desc'].forEach(id => document.getElementById(id).value = '');
+  toast('🔧 Incident signalé');
+}
+
+// ── SAVE PLAN NEW ──
+function toggleOTFieldsNew() {
+  const isOT = document.getElementById('snp-type').value === 'ot';
+  document.getElementById('snp-ot-fields').style.display = isOT ? '' : 'none';
+}
+async function savePlanNew() {
+  if (myRole !== 'admin') { toast('⛔ Réservé à l\'admin'); return; }
+  const titre = document.getElementById('snp-titre').value.trim();
+  if (!titre) { toast('Titre requis'); return; }
+  const type = document.getElementById('snp-type').value;
+  const { error } = await supabase.from('planning').insert({
+    type, titre,
+    operation: type==='ot' ? document.getElementById('snp-op').value : null,
+    cuves: type==='ot' ? document.getElementById('snp-cuves').value || null : null,
+    service: document.getElementById('snp-service').value,
+    priorite: document.getElementById('snp-prio').value,
+    date_limite: document.getElementById('snp-date').value || null,
+    assigne_a: document.getElementById('snp-assign').value || 'tous',
+    notes: document.getElementById('snp-notes').value || null,
+    done: false, created_by: currentUser.id,
+  });
+  if (error) { toast('❌ ' + error.message); return; }
+  closeSheet('s-newplan');
+  toast('✓ Créé !');
+}
+
+// Hook openSheet for s-newplan to populate assign
+const _origOpenSheet = openSheet;
+function openSheet(name) {
+  if (name === 's-newplan') {
+    const sel = document.getElementById('snp-assign');
+    if (sel) {
+      sel.innerHTML = "<optgroup label='Groupes'><option value='tous'>👥 Toute l'équipe</option><option value='cave'>🍷 Cave</option><option value='tirage'>🍾 Tirage</option><option value='degorgement'>✂️ Dégorgement</option><option value='depot'>📦 Dépôt</option></optgroup><optgroup label='Employés'>" +
+        db.profiles.map(p=>`<option value="${p.prenom}">${p.prenom}</option>`).join('') + '</optgroup>';
+    }
+    document.getElementById('snp-date').value = new Date().toISOString().slice(0,10);
+  }
+  _origOpenSheet(name);
+}
+
+// ── INIT ──
+window.addEventListener('DOMContentLoaded', () => {
+  sb.auth.getSession().then(({ data:{session} }) => {
+    if (session?.user) afterLogin(session.user);
+  });
+  document.getElementById('li-pwd').addEventListener('keydown', e => {
+    if (e.key === 'Enter') doLogin();
+  });
+  // Today's date as default for new item
+  document.getElementById('ni-date').value = new Date().toISOString().slice(0,10);
+});
+</script>
+
+<!--
+══════════════════════════════════════════════
+SQL À EXÉCUTER DANS SUPABASE (nouvelle table)
+══════════════════════════════════════════════
+
+-- Table unifiée tâches + OT
+CREATE TABLE planning (
+  id uuid PRIMARY KEY DEFAULT gen_random_uuid(),
+  type text NOT NULL CHECK (type IN ('tache','ot')),
+  titre text NOT NULL,
+  -- Champs OT cave
+  operation text,
+  cuves text,
+  detail text,
+  -- Organisation
+  priorite text NOT NULL DEFAULT 'normal' CHECK (priorite IN ('urgent','normal','bas')),
+  date_limite date,
+  assigne_a text,
+  notes text,
+  -- Clôture
+  done boolean DEFAULT false,
+  done_by uuid REFERENCES profiles(id),
+  done_at timestamptz,
+  done_comment text,
+  created_by uuid REFERENCES profiles(id),
+  created_at timestamptz DEFAULT now()
+);
+
+ALTER TABLE planning ENABLE ROW LEVEL SECURITY;
+CREATE POLICY "lecture planning" ON planning FOR SELECT USING (auth.role() = 'authenticated');
+CREATE POLICY "admin crée" ON planning FOR INSERT WITH CHECK (auth.role() = 'authenticated');
+CREATE POLICY "cloturer" ON planning FOR UPDATE USING (auth.role() = 'authenticated');
+CREATE POLICY "admin supprime" ON planning FOR DELETE USING (auth.role() = 'authenticated');
+
+-- Nouvelles colonnes cuves si pas encore fait
+ALTER TABLE cuves ADD COLUMN IF NOT EXISTS type_vin text;
+ALTER TABLE cuves ADD COLUMN IF NOT EXISTS filtre boolean;
+
+-- Nouvelles colonnes lots si pas encore fait
+ALTER TABLE lots ADD COLUMN IF NOT EXISTS date_tirage date;
+ALTER TABLE lots ADD COLUMN IF NOT EXISTS type_lot text;
+
+-- Lien cuve ↔ lot
+-- Si lot_id existe déjà sans ON DELETE SET NULL, recréez-le :
+-- ALTER TABLE cuves DROP COLUMN IF EXISTS lot_id;
+ALTER TABLE cuves ADD COLUMN IF NOT EXISTS lot_id uuid REFERENCES lots(id) ON DELETE SET NULL;
+
+ALTER PUBLICATION supabase_realtime ADD TABLE planning;
+-->
+</body>
+</html>
